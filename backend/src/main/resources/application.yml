@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: scamshield-backend
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+scan:
+  mode: ${SCAN_MODE:MOCK}
+
+aws:
+  region: ${AWS_REGION:ap-south-1}
+  dynamodb:
+    endpoint: ${DYNAMODB_ENDPOINT:}
+    tables:
+      users: ${DYNAMODB_TABLE_USERS:ScamShield-Users-dev}
+      scans: ${DYNAMODB_TABLE_SCANS:ScamShield-ScanHistory-dev}
+      groups: ${DYNAMODB_TABLE_GROUPS:ScamShield-FamilyGroups-dev}
+      invites: ${DYNAMODB_TABLE_INVITES:ScamShield-FamilyInvites-dev}
+  cognito:
+    user-pool-id: ${COGNITO_USER_POOL_ID:ap-south-1_ScamShieldDev}
+    client-id: ${COGNITO_CLIENT_ID:scamshield-web-client-dev}
+    region: ${COGNITO_REGION:ap-south-1}
+    jwk-set-uri: ${COGNITO_JWK_SET_URI:https://cognito-idp.ap-south-1.amazonaws.com/${aws.cognito.user-pool-id}/.well-known/jwks.json}
+    issuer-uri: ${COGNITO_ISSUER_URI:https://cognito-idp.ap-south-1.amazonaws.com/${aws.cognito.user-pool-id}}
+    test-jwt-secret: ${COGNITO_TEST_JWT_SECRET:scamshield-dev-jwt-secret-key-must-be-32-chars!}
+
+seed:
+  demo-data: ${SEED_DEMO_DATA:false}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGIN:http://localhost:5173}
+
+logging:
+  level:
+    root: INFO
+    com.scamshield: DEBUG
+

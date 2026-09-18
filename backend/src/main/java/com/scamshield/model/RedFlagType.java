@@ -1,0 +1,12 @@
+package com.scamshield.model;
+
+public enum RedFlagType {
+    URGENCY,
+    FINANCIAL_REQUEST,
+    IMPERSONATION,
+    SUSPICIOUS_LINK,
+    SENSITIVE_INFO_REQUEST,
+    GRAMMAR_INCONSISTENCY,
+    UNSOLICITED_CONTACT,
+    TOO_GOOD_TO_BE_TRUE
+}

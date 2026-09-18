@@ -1,0 +1,475 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =======================================================================
+   SCAMSHIELD — CSS CUSTOM PROPERTY TOKEN SYSTEM
+   Obsidian & Crimson Glass: dark (Obsidian Nocturnal) + light (Daylight)
+   ======================================================================= */
+
+/* ── DARK THEME (default) ─────────────────────────────────────────────── */
+:root,
+html.dark {
+  /* RGB channel variables for Tailwind opacity resolution */
+  --color-page:                   11 11 11;       /* #0B0B0B */
+  --color-surface-lowest:         14 14 14;       /* #0e0e0e */
+  --color-surface-low:            28 27 27;       /* #1c1b1b */
+  --color-surface:                32 31 31;       /* #201f1f */
+  --color-surface-high:           42 42 42;       /* #2a2a2a */
+  --color-surface-highest:        53 53 52;       /* #353534 */
+  --color-surface-bright:         58 57 57;       /* #3a3939 */
+  --color-surface-dim:            19 19 19;       /* #131313 */
+  --color-surface-dark:           21 21 21;       /* #151515 */
+
+  --color-offwhite:               245 242 237;    /* #F5F2ED */
+  --color-black:                  11 11 11;       /* #0B0B0B */
+  --color-on-surface:             229 226 225;    /* #e5e2e1 */
+  --color-on-surface-variant:     225 191 188;    /* #e1bfbc */
+  --color-on-background:          229 226 225;    /* #e5e2e1 */
+  --color-muted-foreground:       201 184 182;    /* #c9b8b6 */
+
+  --color-primary:                255 179 175;    /* #ffb3af */
+  --color-crimson:                139 13 26;      /* #8B0D1A */
+  --color-crimson-light:          255 179 175;    /* #ffb3af */
+
+  --color-glass-border:           245 242 237;    /* #F5F2ED at 0.12 opacity */
+  --color-glass-surface:          245 242 237;
+  --color-border-subtle:          42 42 42;       /* #2A2A2A */
+
+  --bg-page:              #0B0B0B;
+  --bg-surface:           rgba(21, 21, 21, 0.80);
+  --bg-surface-elevated:  rgba(30, 30, 30, 0.85);
+  --bg-surface-card:      rgba(255, 255, 255, 0.035);
+  --bg-surface-input:     rgba(255, 255, 255, 0.05);
+  --bg-surface-hover:     rgba(255, 255, 255, 0.06);
+  --bg-glass:             rgba(245, 242, 237, 0.055);
+  --bg-navbar:            rgba(21, 21, 21, 0.70);
+  --bg-nav-pill:          rgba(21, 21, 21, 0.70);
+  --bg-nav-item-hover:    rgba(255, 255, 255, 0.05);
+  --bg-account-capsule:   rgba(0, 0, 0, 0.40);
+  --border-default:       rgba(245, 242, 237, 0.12);
+  --border-subtle:        rgba(245, 242, 237, 0.07);
+  --border-strong:        rgba(245, 242, 237, 0.20);
+  --border-input:         rgba(245, 242, 237, 0.12);
+  --border-input-focus:   rgba(139, 13, 26, 0.70);
+  --text-primary:         #F5F2ED;
+  --text-secondary:       #c9b8b6;
+  --text-muted:           rgba(225, 191, 188, 0.55);
+  --text-disabled:        rgba(245, 242, 237, 0.30);
+  --text-on-brand:        #F5F2ED;
+  --btn-secondary-bg:     rgba(42, 42, 42, 0.70);
+  --btn-secondary-text:   #F5F2ED;
+  --btn-secondary-border: rgba(245, 242, 237, 0.15);
+  --btn-ghost-hover-bg:   rgba(255, 255, 255, 0.05);
+  --shadow-card:          0 16px 40px -12px rgba(0, 0, 0, 0.80);
+  --shadow-navbar:        0 12px 36px -8px rgba(0, 0, 0, 0.60);
+  --shadow-input:         inset 0 1px 3px rgba(0, 0, 0, 0.30);
+  --shadow-ambient:       0 24px 60px -15px rgba(0, 0, 0, 0.90);
+  --specular-top:         rgba(245, 242, 237, 0.18);
+  --status-ring:          #0B0B0B;
+  --bg-code:              rgba(0, 0, 0, 0.45);
+  --text-code:            rgba(245, 242, 237, 0.80);
+  --border-code:          rgba(245, 242, 237, 0.07);
+  --crimson:              #8B0D1A;
+  --crimson-soft:         rgba(139, 13, 26, 0.15);
+  --crimson-border:       rgba(139, 13, 26, 0.40);
+  --text-crimson:         #ffb3af;
+  --risk-high:            #8B0D1A;
+  --risk-medium:          #C97A2B;
+  --risk-low:             #3A7D5C;
+}
+
+/* ── LIGHT THEME ───────────────────────────────────────────────────────── */
+html.light {
+  /* RGB channel variables for Tailwind opacity resolution */
+  --color-page:                   245 242 237;    /* #F5F2ED - warm daylight off-white */
+  --color-surface-lowest:         255 255 255;    /* #ffffff - crisp white card bases */
+  --color-surface-low:            252 250 247;    /* #fcfaf7 - elevated surface */
+  --color-surface:                247 244 239;    /* #f7f4ef - neutral card surface */
+  --color-surface-high:           237 232 225;    /* #ede8e1 - secondary surface */
+  --color-surface-highest:        225 219 211;    /* #e1dbd3 - tertiary surface */
+  --color-surface-bright:         255 255 255;    /* #ffffff */
+  --color-surface-dim:            235 229 221;    /* #ebe5dd */
+  --color-surface-dark:           255 255 255;    /* #ffffff - white for sticky rails and bars */
+
+  --color-offwhite:               21 21 21;       /* #151515 - deep charcoal near-black */
+  --color-black:                  245 242 237;    /* #F5F2ED */
+  --color-on-surface:             21 21 21;       /* #151515 - deep charcoal primary text */
+  --color-on-surface-variant:     74 70 66;       /* #4a4642 - dark warm neutral (high contrast) */
+  --color-on-background:          21 21 21;       /* #151515 */
+  --color-muted-foreground:       107 101 96;     /* #6b6560 - medium-dark readable neutral */
+
+  --color-primary:                139 13 26;      /* #8B0D1A - brand crimson */
+  --color-crimson:                139 13 26;      /* #8B0D1A */
+  --color-crimson-light:          139 13 26;      /* #8B0D1A - deep crimson for high contrast on light */
+
+  --color-glass-border:           21 21 21;       /* #151515 (at 0.12 opacity) */
+  --color-glass-surface:          255 255 255;    /* #ffffff */
+  --color-border-subtle:          215 208 199;    /* #d7d0c7 - subtle border */
+
+  --bg-page:              #F5F2ED;
+  --bg-surface:           rgba(255, 255, 255, 0.90);
+  --bg-surface-elevated:  rgba(255, 255, 255, 0.97);
+  --bg-surface-card:      rgba(255, 255, 255, 0.80);
+  --bg-surface-input:     rgba(255, 255, 255, 0.92);
+  --bg-surface-hover:     rgba(21, 21, 21, 0.04);
+  --bg-glass:             rgba(255, 255, 255, 0.72);
+  --bg-navbar:            rgba(245, 242, 237, 0.90);
+  --bg-nav-pill:          rgba(225, 220, 213, 0.85);
+  --bg-nav-item-hover:    rgba(21, 21, 21, 0.06);
+  --bg-account-capsule:   rgba(255, 255, 255, 0.80);
+  --border-default:       rgba(21, 21, 21, 0.12);
+  --border-subtle:        rgba(21, 21, 21, 0.08);
+  --border-strong:        rgba(21, 21, 21, 0.22);
+  --border-input:         rgba(21, 21, 21, 0.16);
+  --border-input-focus:   rgba(139, 13, 26, 0.70);
+  --text-primary:         #151515;
+  --text-secondary:       #4a4642;
+  --text-muted:           #6b6560;
+  --text-disabled:        #9a9490;
+  --text-on-brand:        #F5F2ED;
+  --btn-secondary-bg:     rgba(220, 215, 208, 0.82);
+  --btn-secondary-text:   #151515;
+  --btn-secondary-border: rgba(21, 21, 21, 0.15);
+  --btn-ghost-hover-bg:   rgba(21, 21, 21, 0.06);
+  --shadow-card:          0 4px 16px -4px rgba(0, 0, 0, 0.08);
+  --shadow-navbar:        0 4px 20px -4px rgba(0, 0, 0, 0.10), inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+  --shadow-input:         inset 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-ambient:       0 12px 36px -10px rgba(0, 0, 0, 0.10);
+  --specular-top:         rgba(255, 255, 255, 0.90);
+  --status-ring:          #F5F2ED;
+  --bg-code:              rgba(21, 21, 21, 0.06);
+  --text-code:            #2a2522;
+  --border-code:          rgba(21, 21, 21, 0.10);
+  --crimson:              #8B0D1A;
+  --crimson-soft:         rgba(139, 13, 26, 0.10);
+  --crimson-border:       rgba(139, 13, 26, 0.35);
+  --text-crimson:         #8B0D1A;
+  --risk-high:            #8B0D1A;
+  --risk-medium:          #C97A2B;
+  --risk-low:             #3A7D5C;
+}
+
+/* =======================================================================
+   BASE LAYER
+   ======================================================================= */
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-page); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--crimson); }
+}
+
+/* =======================================================================
+   UTILITY CLASSES — all reference CSS variables, theme-agnostic
+   ======================================================================= */
+@layer utilities {
+  /* Glass surfaces */
+  .liquid-glass {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    background-color: var(--bg-glass);
+    border: 1px solid var(--border-default);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+  }
+
+  .glass-panel {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-card);
+    transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .glass-card {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background-color: var(--bg-surface-card);
+    border: 1px solid var(--border-default);
+    transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .glass-card:hover {
+    border-color: var(--crimson-border);
+    box-shadow: 0 12px 32px -8px rgba(139, 13, 26, 0.18);
+  }
+
+  .liquid-glass-card {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background-color: var(--bg-glass);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-card);
+    transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .glass-rim-highlight {
+    position: relative;
+  }
+
+  .glass-rim-highlight::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--specular-top), transparent);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Semantic token helpers */
+  .ss-surface {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-card);
+    transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .ss-card {
+    background-color: var(--bg-surface-card);
+    border: 1px solid var(--border-default);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-card);
+    transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .ss-input {
+    background-color: var(--bg-surface-input);
+    border: 1px solid var(--border-input);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-input);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .ss-input:focus {
+    border-color: var(--border-input-focus);
+    box-shadow: 0 0 0 2px rgba(139, 13, 26, 0.20);
+    outline: none;
+  }
+
+  .ss-input::placeholder { color: var(--text-muted); }
+
+  .ss-navbar {
+    background-color: var(--bg-navbar);
+    border: 1px solid var(--border-default);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: var(--shadow-navbar);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+  }
+
+  .ss-code-block {
+    background-color: var(--bg-code);
+    color: var(--text-code);
+    border: 1px solid var(--border-code);
+    border-radius: 0.5rem;
+  }
+}
+
+/* =======================================================================
+   GLOBAL LIGHT-MODE TOKEN OVERRIDES
+   Override Tailwind utility classes that use hardcoded dark palette values
+   This is the comprehensive fix for all dark-hardcoded colors in light mode.
+   ======================================================================= */
+
+/* ── Text ──────────────────────────────────────────────────────────────── */
+html.light .text-color-offwhite       { color: #151515 !important; }
+html.light .text-on-surface           { color: #1f1e1d !important; }
+html.light .text-on-surface-variant   { color: #4a4642 !important; }
+html.light .text-on-background        { color: #151515 !important; }
+html.light .text-primary              { color: #8B0D1A !important; }
+html.light .text-muted-foreground     { color: #6b6560 !important; }
+html.light .text-white                { color: #151515 !important; }
+html.light .text-slate-100            { color: #1a1816 !important; }
+html.light .text-slate-200            { color: #1f1e1d !important; }
+html.light .text-slate-300            { color: #3a3734 !important; }
+html.light .text-slate-400            { color: #6b6560 !important; }
+html.light .text-slate-500            { color: #9a9490 !important; }
+
+/* Hover text */
+html.light .hover\:text-white:hover   { color: #151515 !important; }
+
+/* ── Backgrounds ───────────────────────────────────────────────────────── */
+html.light .bg-color-black               { background-color: var(--bg-page) !important; }
+html.light .bg-surface-container-lowest  { background-color: rgba(255, 255, 255, 0.92) !important; }
+html.light .bg-surface-container-low     { background-color: rgba(255, 255, 255, 0.82) !important; }
+html.light .bg-surface-container         { background-color: rgba(245, 242, 237, 0.90) !important; }
+html.light .bg-surface-container-high    { background-color: rgba(232, 228, 222, 0.88) !important; }
+html.light .bg-surface-container-highest { background-color: rgba(220, 215, 208, 0.88) !important; }
+html.light .bg-surface-dark              { background-color: #ece8e1 !important; }
+html.light .bg-surface-dim               { background-color: #f0ece6 !important; }
+html.light .bg-glass-surface             { background-color: rgba(21, 21, 21, 0.04) !important; }
+
+/* Dark overlays → light equivalents */
+html.light .bg-black\/40  { background-color: rgba(255, 255, 255, 0.80) !important; }
+html.light .bg-black\/95  { background-color: rgba(245, 242, 237, 0.97) !important; }
+html.light .bg-black\/90  { background-color: rgba(245, 242, 237, 0.95) !important; }
+html.light .bg-black\/80  { background-color: rgba(245, 242, 237, 0.92) !important; }
+html.light .bg-black\/60  { background-color: rgba(245, 242, 237, 0.88) !important; }
+html.light .bg-black\/50  { background-color: rgba(245, 242, 237, 0.84) !important; }
+html.light .bg-black\/20  { background-color: rgba(21, 21, 21, 0.05) !important; }
+html.light .bg-white\/5   { background-color: rgba(21, 21, 21, 0.04) !important; }
+html.light .bg-white\/60  { background-color: rgba(255, 255, 255, 0.84) !important; }
+html.light .bg-white\/95  { background-color: rgba(255, 255, 255, 0.97) !important; }
+
+/* Modal backdrop dimming in light mode */
+html.light .bg-color-black\/85,
+html.light .bg-color-black\/80 {
+  background-color: rgba(21, 21, 21, 0.50) !important;
+}
+
+/* ── Primary & Crimson Buttons Text Protection (High Contrast Light Mode) ── */
+html.light .bg-color-crimson,
+html.light button.bg-color-crimson,
+html.light button.bg-primary,
+html.light a.bg-color-crimson,
+html.light a.bg-primary,
+html.light .btn-primary {
+  color: #F5F2ED !important;
+}
+
+html.light button.bg-primary,
+html.light a.bg-primary {
+  background-color: #8B0D1A !important;
+}
+
+html.light .bg-color-crimson .text-color-offwhite,
+html.light .bg-color-crimson .text-white,
+html.light .bg-primary .text-color-offwhite,
+html.light .bg-primary .text-white,
+html.light .bg-risk-high .text-color-offwhite,
+html.light .bg-risk-high .text-white,
+html.light button.bg-color-crimson .text-color-offwhite,
+html.light button.bg-color-crimson .text-white,
+html.light button.bg-primary .text-color-offwhite,
+html.light button.bg-primary .text-white,
+html.light a.bg-color-crimson .text-color-offwhite,
+html.light a.bg-color-crimson .text-white,
+html.light a.bg-primary .text-color-offwhite,
+html.light a.bg-primary .text-white,
+html.light .btn-primary .text-color-offwhite,
+html.light .btn-primary .text-white {
+  color: #F5F2ED !important;
+}
+
+html.light .bg-color-crimson svg,
+html.light .bg-primary svg,
+html.light .btn-primary svg,
+html.light button.bg-color-crimson svg,
+html.light button.bg-primary svg,
+html.light a.bg-color-crimson svg,
+html.light a.bg-primary svg {
+  color: #F5F2ED !important;
+}
+
+/* ── Borders ───────────────────────────────────────────────────────────── */
+html.light .border-glass-border  { border-color: rgba(21, 21, 21, 0.12) !important; }
+html.light .border-border-subtle { border-color: rgba(21, 21, 21, 0.08) !important; }
+html.light .border-white\/10     { border-color: rgba(21, 21, 21, 0.10) !important; }
+html.light .border-white\/15     { border-color: rgba(21, 21, 21, 0.14) !important; }
+html.light .border-white\/5      { border-color: rgba(21, 21, 21, 0.06) !important; }
+
+/* ── Shadows ───────────────────────────────────────────────────────────── */
+html.light .shadow-glass { box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.10) !important; }
+html.light .shadow-2xl   { box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.12) !important; }
+
+/* ── Inputs ────────────────────────────────────────────────────────────── */
+html.light input,
+html.light textarea,
+html.light select {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  color: #151515 !important;
+  border-color: rgba(21, 21, 21, 0.16) !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #6b6560 !important;
+}
+
+/* ── Navbar specific: pill container + account capsule ─────────────────── */
+html.light nav.hidden,
+html.light nav.hidden.md\:flex {
+  background-color: rgba(225, 220, 213, 0.85) !important;
+  border-color: rgba(21, 21, 21, 0.08) !important;
+}
+
+/* Keep active nav pill text white on crimson background */
+html.light nav a.text-\[#F5F2ED\] { color: #F5F2ED !important; }
+
+/* ── Code / mono blocks ────────────────────────────────────────────────── */
+html.light .bg-black\/40.rounded-lg,
+html.light .bg-black\/30 {
+  background-color: rgba(21, 21, 21, 0.06) !important;
+  color: #2a2522 !important;
+  border-color: rgba(21, 21, 21, 0.10) !important;
+}
+
+/* ── Semantic Pastel & Status Badges in Light Mode (High Contrast WCAG AAA) ── */
+html.light .text-amber-200,
+html.light .text-amber-300 {
+  color: #92400e !important; /* amber-800 */
+}
+html.light .text-amber-400 {
+  color: #b45309 !important; /* amber-700 */
+}
+html.light .text-emerald-400,
+html.light .text-emerald-300 {
+  color: #15803d !important; /* emerald-700 */
+}
+html.light .text-rose-300,
+html.light .text-rose-400 {
+  color: #be123c !important; /* rose-700 */
+}
+html.light .text-sky-300,
+html.light .text-sky-400 {
+  color: #0369a1 !important; /* sky-700 */
+}
+html.light .text-purple-300,
+html.light .text-purple-400 {
+  color: #7e22ce !important; /* purple-700 */
+}
+html.light .text-crimson-light {
+  color: #8B0D1A !important;
+}
+
+/* ── Typography Heading & Body Defaults in Light Mode ──────────────────── */
+html.light h1:not([class*="text-color-crimson"]):not([class*="text-primary"]),
+html.light h2:not([class*="text-color-crimson"]):not([class*="text-primary"]),
+html.light h3:not([class*="text-color-crimson"]):not([class*="text-primary"]),
+html.light h4:not([class*="text-color-crimson"]):not([class*="text-primary"]),
+html.light h5,
+html.light h6 {
+  color: #151515;
+}
+
+html.light p:not([class*="text-"]):not([class*="font-mono"]) {
+  color: #4a4642;
+}
+
+/* ── Eyebrow & Status Pills ────────────────────────────────────────────── */
+html.light .bg-surface-container-high\/60 {
+  background-color: rgba(237, 232, 225, 0.75) !important;
+}
+
+html.light .bg-surface-dark\/95 {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+}

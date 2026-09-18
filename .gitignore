@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+target/
+*.class
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment and secrets (Strict Local Protection)
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+*.cert
+*.token
+*credentials*
+aws_credentials
+
+# Editor & OS files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Local Project Documentation & Local Test Artifacts (Local Only - Never Commit)
+AI_SPEC.md
+API.md
+ARCHITECTURE.md
+AWS.md
+DATABASE.md
+DESIGN.md
+ENVIRONMENT.md
+PHASE_8_COMPLETION_REPORT.md
+PHASE_9_COMPLETION_REPORT.md
+PHASE_10_COMPLETION_REPORT.md
+PRD.md
+README.md
+SECURITY.md
+TASKS.md
+TECH_STACK.md
+test_phase10_cognito_auth.js
+

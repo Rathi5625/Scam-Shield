@@ -1,0 +1,17 @@
+package com.scamshield.model;
+
+public enum ScamCategory {
+    BANKING_KYC,
+    UPI_PAYMENT,
+    LOTTERY_PRIZE,
+    JOB_SCAM,
+    DELIVERY_SCAM,
+    RENTAL_SCAM,
+    ROMANCE_SCAM,
+    GOVERNMENT_IMPERSONATION,
+    SIM_KYC_FRAUD,
+    INVESTMENT_SCAM,
+    SCHOLARSHIP_SCAM,
+    PHISHING,
+    OTHER
+}
