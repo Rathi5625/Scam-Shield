@@ -30,6 +30,13 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .headers(headers -> headers
+                .contentTypeOptions(Customizer.withDefaults())
+                .frameOptions(org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig::deny)
+                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; frame-ancestors 'none'; object-src 'none';"))
+                .referrerPolicy(referrer -> referrer.policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+                .permissionsPolicy(permissions -> permissions.policy("camera=(), microphone=(), geolocation=()"))
+            )
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -40,14 +47,15 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public health and diagnostics
                 .requestMatchers("/health", "/api/health").permitAll()
-                // Scanner inference endpoints (MOCK or Bedrock later)
+                // Scanner inference endpoints
                 .requestMatchers("/api/scan/**").permitAll()
                 .requestMatchers("/api/upload/**").permitAll()
                 .requestMatchers("/error").permitAll()
-                // Private user, history, and family resources strictly require authenticated JWT
+                // Private user, history, family, and storage resources strictly require authenticated JWT
                 .requestMatchers("/api/users/**").authenticated()
                 .requestMatchers("/api/history/**").authenticated()
                 .requestMatchers("/api/family/**").authenticated()
+                .requestMatchers("/api/storage/**").authenticated()
                 // Any other request requires authentication
                 .anyRequest().authenticated()
             )
@@ -68,11 +76,19 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         List<String> origins = Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
+                .filter(o -> !o.isEmpty())
                 .toList();
-        configuration.setAllowedOrigins(origins);
+
+        // Security rule: Never allow wildcard '*' when allowCredentials is true
+        if (origins.contains("*")) {
+            configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        } else {
+            configuration.setAllowedOrigins(origins);
+        }
+
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "X-Requested-With", "Origin"));
-        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setExposedHeaders(List.of("Authorization", "Retry-After"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 

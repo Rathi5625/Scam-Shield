@@ -23,6 +23,8 @@ public class ScanHistoryEntity {
     private String groupId;          // Nullable or family group ID
     private String sharedBy;         // Callsign of member who shared
     private String s3Key;            // Nullable (for screenshots)
+    private String storageObjectKey; // ObjectStorageService key
+    private String notificationStatus; // DELIVERED | SUPPRESSED | FAILED | NONE
     private String createdAt;
 
     public ScanHistoryEntity() {
@@ -125,6 +127,22 @@ public class ScanHistoryEntity {
 
     public void setS3Key(String s3Key) {
         this.s3Key = s3Key;
+    }
+
+    public String getStorageObjectKey() {
+        return storageObjectKey;
+    }
+
+    public void setStorageObjectKey(String storageObjectKey) {
+        this.storageObjectKey = storageObjectKey;
+    }
+
+    public String getNotificationStatus() {
+        return notificationStatus;
+    }
+
+    public void setNotificationStatus(String notificationStatus) {
+        this.notificationStatus = notificationStatus;
     }
 
     @DynamoDbSecondarySortKey(indexNames = GROUP_INDEX)

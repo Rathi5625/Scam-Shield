@@ -29,6 +29,8 @@ public class ScanHistoryService {
     private static final Pattern CARD_PATTERN = Pattern.compile("\\b(?:\\d[ -]*?){13,16}\\b");
     private static final Pattern OTP_PATTERN = Pattern.compile("(?i)\\b(?:otp|one[- ]?time[- ]?password|code|verification[- ]?code)(?:\\s+(?:is|was|number|code))?\\s*[:=]?\\s*\\d{4,8}\\b");
     private static final Pattern PIN_PATTERN = Pattern.compile("(?i)\\b(?:pin|mpin|passcode)(?:\\s+(?:is|was|number|code))?\\s*[:=]?\\s*\\d{4,6}\\b");
+    private static final Pattern CVV_PATTERN = Pattern.compile("(?i)\\b(?:cvv|cvc|security[- ]?code)(?:\\s+(?:is|was|number|code))?\\s*[:=]?\\s*\\d{3,4}\\b");
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("(?i)\\b(?:password|passwd|pwd)\\s*[:=]\\s*[^\\s,;]{3,32}\\b");
     private static final Pattern URL_AUTH_PARAM_PATTERN = Pattern.compile("(?i)([?&](token|auth|key|code|session|secret)=)[^&]+");
 
     private final ScanHistoryRepository scanHistoryRepository;
@@ -60,6 +62,8 @@ public class ScanHistoryService {
         entity.setGroupId(req.getGroupId());
         entity.setSharedBy(req.getSharedBy());
         entity.setS3Key(req.getS3Key());
+        entity.setStorageObjectKey(req.getStorageObjectKey() != null ? req.getStorageObjectKey() : req.getS3Key());
+        entity.setNotificationStatus(req.getNotificationStatus() != null ? req.getNotificationStatus() : "NONE");
         entity.setCreatedAt(Instant.now().toString());
 
         if (req.getRedFlags() != null) {
@@ -118,6 +122,8 @@ public class ScanHistoryService {
         // Redact OTPs and PINs
         s = OTP_PATTERN.matcher(s).replaceAll("OTP: [REDACTED]");
         s = PIN_PATTERN.matcher(s).replaceAll("PIN: [REDACTED]");
+        s = CVV_PATTERN.matcher(s).replaceAll("CVV: [REDACTED]");
+        s = PASSWORD_PATTERN.matcher(s).replaceAll("password: [REDACTED]");
         // Redact credit cards
         s = CARD_PATTERN.matcher(s).replaceAll("•••• •••• •••• [REDACTED]");
         // Strip URL auth parameters
@@ -143,6 +149,8 @@ public class ScanHistoryService {
         res.setGroupId(entity.getGroupId());
         res.setSharedBy(entity.getSharedBy());
         res.setS3Key(entity.getS3Key());
+        res.setStorageObjectKey(entity.getStorageObjectKey());
+        res.setNotificationStatus(entity.getNotificationStatus());
         res.setCreatedAt(entity.getCreatedAt());
 
         if (entity.getRedFlagsJson() != null && !entity.getRedFlagsJson().trim().isEmpty()) {

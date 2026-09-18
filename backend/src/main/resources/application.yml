@@ -4,15 +4,44 @@ server:
 spring:
   application:
     name: scamshield-backend
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:5MB}
+      max-request-size: ${MAX_REQUEST_SIZE:10MB}
   jackson:
     serialization:
       write-dates-as-timestamps: false
 
+ratelimit:
+  scan-per-minute: ${RATE_LIMIT_SCAN_PER_MINUTE:60}
+  family-per-minute: ${RATE_LIMIT_FAMILY_PER_MINUTE:30}
+
+ai:
+  provider: ${AI_PROVIDER:${SCAN_MODE:MOCK}}
+
 scan:
-  mode: ${SCAN_MODE:MOCK}
+  mode: ${SCAN_MODE:${AI_PROVIDER:MOCK}}
+
+gemini:
+  api-key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:gemini-3.6-flash}
+  timeout-seconds: ${GEMINI_TIMEOUT_SECONDS:30}
+  max-attempts: ${GEMINI_MAX_ATTEMPTS:2}
+  base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com}
+
+storage:
+  mode: ${STORAGE_MODE:LOCAL}
+
+notification:
+  mode: ${NOTIFICATION_MODE:MOCK}
 
 aws:
   region: ${AWS_REGION:ap-south-1}
+  s3:
+    bucket-name: ${S3_BUCKET_NAME:}
+    temp-retention-hours: ${S3_TEMP_OBJECT_RETENTION_HOURS:24}
+  sns:
+    topic-arn: ${SNS_TOPIC_ARN:}
   dynamodb:
     endpoint: ${DYNAMODB_ENDPOINT:}
     tables:
@@ -27,6 +56,11 @@ aws:
     jwk-set-uri: ${COGNITO_JWK_SET_URI:https://cognito-idp.ap-south-1.amazonaws.com/${aws.cognito.user-pool-id}/.well-known/jwks.json}
     issuer-uri: ${COGNITO_ISSUER_URI:https://cognito-idp.ap-south-1.amazonaws.com/${aws.cognito.user-pool-id}}
     test-jwt-secret: ${COGNITO_TEST_JWT_SECRET:scamshield-dev-jwt-secret-key-must-be-32-chars!}
+  bedrock:
+    region: ${BEDROCK_REGION:${aws.region}}
+    model-id: ${BEDROCK_MODEL_ID:global.amazon.nova-2-lite-v1:0}
+    timeout-seconds: ${BEDROCK_TIMEOUT_SECONDS:30}
+    max-attempts: ${BEDROCK_MAX_ATTEMPTS:2}
 
 seed:
   demo-data: ${SEED_DEMO_DATA:false}

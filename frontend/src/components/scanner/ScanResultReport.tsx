@@ -195,7 +195,7 @@ export const ScanResultReport: React.FC<ScanResultReportProps> = ({
           <div className="flex items-center gap-2 px-3.5 py-1 rounded-full bg-surface-container-lowest/50 border border-glass-border">
             <span className="w-1.5 h-1.5 rounded-full bg-risk-low" />
             <span>
-              ENGINE: <strong className="text-color-offwhite">MOCK ANALYSIS (Local Phase 3)</strong>
+              ENGINE: <strong className="text-color-offwhite">{scanResult.engineName || 'MOCK ANALYSIS (Local Phase 3)'}</strong>
             </span>
           </div>
 

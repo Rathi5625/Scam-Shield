@@ -7,6 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 
 import javax.crypto.SecretKey;
@@ -21,17 +25,37 @@ public class JwtConfig {
     @Value("${aws.cognito.jwk-set-uri:https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_ScamShieldDev/.well-known/jwks.json}")
     private String jwkSetUri;
 
+    @Value("${aws.cognito.issuer-uri:https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_ScamShieldDev}")
+    private String issuerUri;
+
     @Value("${aws.cognito.test-jwt-secret:scamshield-dev-jwt-secret-key-must-be-32-chars!}")
     private String testJwtSecret;
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        log.info("Initializing ScamShield JwtDecoder. JWKS URI: {}", jwkSetUri);
+        log.info("Initializing ScamShield JwtDecoder. JWKS URI: {}, Issuer: {}", jwkSetUri, issuerUri);
+
+        OAuth2TokenValidator<Jwt> timestampValidator = new JwtTimestampValidator();
+        OAuth2TokenValidator<Jwt> subjectValidator = token -> {
+            if (token.getSubject() == null || token.getSubject().trim().isEmpty()) {
+                OAuth2Error error =
+                        new OAuth2Error("invalid_token", "JWT subject claim ('sub') cannot be null or empty", null);
+                return OAuth2TokenValidatorResult.failure(error);
+            }
+            return OAuth2TokenValidatorResult.success();
+        };
+
+        DelegatingOAuth2TokenValidator<Jwt> localDevValidator =
+                new DelegatingOAuth2TokenValidator<>(timestampValidator, subjectValidator);
 
         // 1. Production Cognito RSA Decoder (configured with Cognito JWKS)
         NimbusJwtDecoder cognitoDecoder;
         try {
             cognitoDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+            OAuth2TokenValidator<Jwt> issuerValidator = new JwtIssuerValidator(issuerUri);
+            cognitoDecoder.setJwtValidator(new org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator<>(
+                    timestampValidator, subjectValidator, issuerValidator
+            ));
         } catch (Exception e) {
             log.warn("Could not pre-initialize Cognito JWKS decoder: {}. Fallback will be used if needed.", e.getMessage());
             cognitoDecoder = null;
@@ -41,6 +65,7 @@ public class JwtConfig {
         byte[] secretBytes = testJwtSecret.getBytes(StandardCharsets.UTF_8);
         SecretKey hmacKey = new SecretKeySpec(secretBytes, "HmacSHA256");
         NimbusJwtDecoder testSecretDecoder = NimbusJwtDecoder.withSecretKey(hmacKey).build();
+        testSecretDecoder.setJwtValidator(localDevValidator);
 
         final NimbusJwtDecoder finalCognitoDecoder = cognitoDecoder;
 

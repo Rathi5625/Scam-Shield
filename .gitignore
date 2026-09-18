@@ -21,6 +21,7 @@ pnpm-debug.log*
 # Environment and secrets (Strict Local Protection)
 .env
 .env.*
+!.env.example
 .env.local
 .env.development.local
 .env.test.local
@@ -54,10 +55,17 @@ ENVIRONMENT.md
 PHASE_8_COMPLETION_REPORT.md
 PHASE_9_COMPLETION_REPORT.md
 PHASE_10_COMPLETION_REPORT.md
+PHASE_11_COMPLETION_REPORT.md
+PHASE_13_COMPLETION_REPORT.md
+PHASE_14_COMPLETION_REPORT.md
 PRD.md
 README.md
 SECURITY.md
 TASKS.md
 TECH_STACK.md
 test_phase10_cognito_auth.js
+test_phase11_bedrock_ai.js
+test_phase12_gemini_smoke.js
+test_phase13_cloud_smoke.js
+test_phase14_security_smoke.js
 

@@ -24,9 +24,9 @@ export const scanService = {
 
       return {
         ...response,
-        latencySeconds,
-        confidence: Math.min(98.5, Math.max(85.0, Number((88 + (response.riskScore / 10)).toFixed(1)))),
-        engineName: 'Sentry-Neural-v2.4 (Bedrock Multimodal)',
+        latencySeconds: response.latencySeconds !== undefined ? response.latencySeconds : latencySeconds,
+        confidence: response.confidence !== undefined ? response.confidence : Math.min(98.5, Math.max(85.0, Number((88 + (response.riskScore / 10)).toFixed(1)))),
+        engineName: response.engineName || 'Amazon Bedrock / Nova 2 Lite',
       };
     } catch (error) {
       console.warn('Backend unavailable, utilizing local mock fallback for UI demonstration', error);
@@ -57,19 +57,20 @@ export const scanService = {
   /**
    * Scan uploaded screenshot image via S3 key
    */
-  async scanImage(s3Key: string): Promise<ScanResponse> {
+  async scanImage(s3Key: string, imageBase64?: string, mimeType?: string): Promise<ScanResponse> {
     const startTime = performance.now();
     try {
+      const payload: ImageScanRequest = { s3Key, imageBase64, mimeType };
       const response = await request<ScanResponse>('/scan/image', {
         method: 'POST',
-        body: JSON.stringify({ s3Key } as ImageScanRequest),
+        body: JSON.stringify(payload),
       });
       const endTime = performance.now();
       return {
         ...response,
-        latencySeconds: Number(((endTime - startTime) / 1000).toFixed(2)),
-        confidence: 95.4,
-        engineName: 'Sentry-Neural-v2.4 (Bedrock Multimodal)',
+        latencySeconds: response.latencySeconds ?? Number(((endTime - startTime) / 1000).toFixed(2)),
+        confidence: response.confidence ?? 95.4,
+        engineName: response.engineName ?? 'ScamShield Multimodal Engine',
       };
     } catch {
       return {

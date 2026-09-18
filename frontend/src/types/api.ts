@@ -57,6 +57,8 @@ export interface TextScanRequest {
 
 export interface ImageScanRequest {
   s3Key: string;
+  imageBase64?: string;
+  mimeType?: string;
 }
 
 export interface UrlScanRequest {

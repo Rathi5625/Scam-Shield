@@ -28,6 +28,7 @@ public class FamilyProtectionService {
     private final ScanHistoryRepository scanHistoryRepository;
     private final ScanHistoryService scanHistoryService;
     private final ObjectMapper objectMapper;
+    private com.scamshield.service.notification.NotificationService notificationService;
 
     public FamilyProtectionService(
             FamilyGroupRepository familyGroupRepository,
@@ -40,6 +41,11 @@ public class FamilyProtectionService {
         this.scanHistoryRepository = scanHistoryRepository;
         this.scanHistoryService = scanHistoryService;
         this.objectMapper = objectMapper;
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setNotificationService(com.scamshield.service.notification.NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 
     public FamilyGroupResponse createGroup(CreateFamilyGroupRequest req) {
@@ -258,6 +264,21 @@ public class FamilyProtectionService {
 
         FamilyGroupEntity saved = familyGroupRepository.save(group);
         log.info("Toggled emergency lockdown for group {}: {}", groupId, active);
+
+        if (notificationService != null) {
+            try {
+                notificationService.sendLockdownAlert(new com.scamshield.service.notification.NotificationService.LockdownAlertEvent(
+                        "lockdown_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10),
+                        groupId,
+                        group.getOwnerId(),
+                        active,
+                        Instant.now().toString()
+                ));
+            } catch (Exception e) {
+                log.warn("Failed to dispatch lockdown alert notification for group {}: {}", groupId, e.getMessage());
+            }
+        }
+
         return toGroupResponse(saved);
     }
 

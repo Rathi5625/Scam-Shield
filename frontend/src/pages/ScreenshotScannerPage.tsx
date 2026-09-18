@@ -36,6 +36,10 @@ export const ScreenshotScannerPage: React.FC = () => {
   }, [previewUrl]);
 
   const handleFileSelected = (file: File) => {
+    if (file.size > 5 * 1024 * 1024) {
+      setError('File size exceeds 5MB limit. Please upload a smaller image.');
+      return;
+    }
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
     }
@@ -56,14 +60,30 @@ export const ScreenshotScannerPage: React.FC = () => {
   const handleScanImage = async () => {
     if (!selectedFile) return;
 
+    if (selectedFile.size > 5 * 1024 * 1024) {
+      setError('File size exceeds 5MB limit. Please upload a smaller image.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setScanResult(null);
 
     try {
-      // In local MOCK mode, use a clearly documented mock S3 key as per API contract
-      const mockS3Key = `screenshots/mock/${selectedFile.name.replace(/\s+/g, '_')}`;
-      const res = await scanService.scanImage(mockS3Key);
+      // Read file to base64 for multimodal scanning
+      const base64Data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          const commaIdx = result.indexOf(',');
+          resolve(commaIdx >= 0 ? result.substring(commaIdx + 1) : result);
+        };
+        reader.onerror = () => reject(new Error('Failed to read image file'));
+        reader.readAsDataURL(selectedFile);
+      });
+
+      const mockS3Key = `screenshots/${selectedFile.name.replace(/\s+/g, '_')}`;
+      const res = await scanService.scanImage(mockS3Key, base64Data, selectedFile.type);
       setScanResult(res);
 
       // Auto-save to local history vault (strictly stores filename metadata, NEVER binary image data)

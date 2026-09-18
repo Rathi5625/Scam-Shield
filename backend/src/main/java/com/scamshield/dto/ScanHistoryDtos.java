@@ -17,6 +17,8 @@ public class ScanHistoryDtos {
         private String groupId;
         private String sharedBy;
         private String s3Key;
+        private String storageObjectKey;
+        private String notificationStatus;
 
         public SaveScanRequest() {}
 
@@ -42,6 +44,10 @@ public class ScanHistoryDtos {
         public void setSharedBy(String sharedBy) { this.sharedBy = sharedBy; }
         public String getS3Key() { return s3Key; }
         public void setS3Key(String s3Key) { this.s3Key = s3Key; }
+        public String getStorageObjectKey() { return storageObjectKey; }
+        public void setStorageObjectKey(String storageObjectKey) { this.storageObjectKey = storageObjectKey; }
+        public String getNotificationStatus() { return notificationStatus; }
+        public void setNotificationStatus(String notificationStatus) { this.notificationStatus = notificationStatus; }
     }
 
     public static class ScanHistoryItemResponse {
@@ -57,6 +63,8 @@ public class ScanHistoryDtos {
         private String groupId;
         private String sharedBy;
         private String s3Key;
+        private String storageObjectKey;
+        private String notificationStatus;
         private String createdAt;
 
         public ScanHistoryItemResponse() {}
@@ -85,6 +93,10 @@ public class ScanHistoryDtos {
         public void setSharedBy(String sharedBy) { this.sharedBy = sharedBy; }
         public String getS3Key() { return s3Key; }
         public void setS3Key(String s3Key) { this.s3Key = s3Key; }
+        public String getStorageObjectKey() { return storageObjectKey; }
+        public void setStorageObjectKey(String storageObjectKey) { this.storageObjectKey = storageObjectKey; }
+        public String getNotificationStatus() { return notificationStatus; }
+        public void setNotificationStatus(String notificationStatus) { this.notificationStatus = notificationStatus; }
         public String getCreatedAt() { return createdAt; }
         public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
     }
