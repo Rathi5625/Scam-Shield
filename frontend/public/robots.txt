@@ -1,0 +1,19 @@
+# ScamShield Production Robots Policy
+User-agent: *
+Allow: /
+Allow: /privacy
+Allow: /terms
+Allow: /login
+Allow: /signup
+
+# Disallow authenticated private operative workflows
+Disallow: /scan
+Disallow: /scanner
+Disallow: /history
+Disallow: /family-protection
+Disallow: /family
+Disallow: /settings
+Disallow: /onboarding
+Disallow: /api/
+
+Sitemap: https://scam-shield-kohl-phi.vercel.app/sitemap.xml

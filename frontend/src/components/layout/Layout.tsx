@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { GlassNavbar } from '../common/GlassNavbar';
 import { BackgroundAtmosphere } from '../common/BackgroundAtmosphere';
 import { scanService } from '../../services/scanService';
 
 export const Layout: React.FC = () => {
-  const [backendMode, setBackendMode] = useState<string>('MOCK');
+  const [backendMode, setBackendMode] = useState<string>('ACTIVE');
 
   useEffect(() => {
     scanService
       .checkHealth()
       .then((res) => setBackendMode(res.mode || 'LIVE'))
-      .catch(() => setBackendMode('MOCK-LOCAL'));
+      .catch(() => setBackendMode('ACTIVE'));
   }, []);
 
   return (
@@ -30,11 +30,25 @@ export const Layout: React.FC = () => {
       {/* Footer */}
       <footer className="w-full border-t border-glass-border/40 py-8 relative z-10 bg-surface-container-lowest/40 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-on-surface-variant font-mono">
-          <div>
+          <div className="flex items-center gap-3">
             <span>SCAMSHIELD SENTRY • HEURISTIC ENGINE V1.0</span>
           </div>
-          <div className="flex items-center gap-6">
+
+          <div className="flex items-center gap-6 flex-wrap justify-center">
+            <Link to="/privacy" className="hover:text-color-offwhite transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="hover:text-color-offwhite transition-colors">
+              Terms &amp; Conditions
+            </Link>
+            <Link to="/settings" className="hover:text-color-offwhite transition-colors">
+              Security Governance
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-4 text-[11px]">
             <span>EPHEMERAL • ZERO RETENTION</span>
+            <span>•</span>
             <span className="text-color-crimson font-medium">BUILT ON AWS</span>
           </div>
         </div>

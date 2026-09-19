@@ -13,8 +13,14 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { BrandEmblem } from '../components/common/BrandEmblem';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const SignupPage: React.FC = () => {
+  usePageMeta({
+    title: 'Request Access — ScamShield',
+    description: 'Establish your authenticated operative security node on the ScamShield sovereign defense perimeter.',
+  });
+
   const { user, isAuthenticated, signUp, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
 
@@ -25,6 +31,7 @@ export const SignupPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [honeypot, setHoneypot] = useState('');
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -65,14 +72,24 @@ export const SignupPage: React.FC = () => {
     setFormError(null);
     clearError();
 
+    // Bot trap check
+    if (honeypot) {
+      setFormError('Automated bot interaction detected.');
+      return;
+    }
+
     if (!displayName.trim()) {
       setFormError('Please enter your full name or operative callsign.');
       return;
     }
-    if (!email.trim() || !email.includes('@')) {
-      setFormError('Please enter a valid email address.');
+
+    const trimmedEmail = email.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
+      setFormError('Please enter a valid email address format (e.g. name@domain.com).');
       return;
     }
+
     if (password.length < 8) {
       setFormError('Passphrase must be at least 8 characters long.');
       return;
@@ -85,7 +102,7 @@ export const SignupPage: React.FC = () => {
     try {
       await signUp({
         displayName: displayName.trim(),
-        email: email.trim(),
+        email: trimmedEmail,
         password,
       });
 
@@ -132,6 +149,18 @@ export const SignupPage: React.FC = () => {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Bot Honeypot (Accessibility Hidden) */}
+              <input
+                type="text"
+                name="scamshield_signup_trap"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                className="sr-only opacity-0 absolute -left-[9999px]"
+                aria-hidden="true"
+              />
+
               {/* Name Input */}
               <div className="space-y-1.5 text-left">
                 <div className="flex items-center justify-between font-mono text-xs text-on-surface-variant">

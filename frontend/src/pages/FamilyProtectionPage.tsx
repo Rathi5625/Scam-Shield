@@ -26,8 +26,14 @@ import type {
 } from '../types/family';
 import { Users, UserPlus } from 'lucide-react';
 import { GlassButton } from '../components/common/GlassButton';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const FamilyProtectionPage: React.FC = () => {
+  usePageMeta({
+    title: 'Family Defense Circle — ScamShield',
+    description: 'Protect your loved ones with proactive threat sharing, zero-knowledge privacy, and emergency circle lockdowns.',
+  });
+
   const { user } = useAuth();
   const navigate = useNavigate();
 

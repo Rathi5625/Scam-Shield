@@ -70,6 +70,7 @@ export interface UrlScanResponse {
   verdict: 'SAFE' | 'SUSPICIOUS' | 'HIGH_RISK' | string;
   reasons: string[];
   createdAt: string;
+  riskScore?: number;
 }
 
 export interface ApiError {

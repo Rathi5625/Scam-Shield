@@ -11,8 +11,14 @@ import { SecurityAuthSection } from '../components/settings/SecurityAuthSection'
 import { AppearanceModeSection } from '../components/settings/AppearanceModeSection';
 import { GovernanceSection } from '../components/settings/GovernanceSection';
 import type { UserPreferences } from '../types/auth';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const SettingsPage: React.FC = () => {
+  usePageMeta({
+    title: 'Security Governance & Settings — ScamShield',
+    description: 'Manage your operative profile, privacy telemetry, local storage inventory, and authentication preferences.',
+  });
+
   const navigate = useNavigate();
   const { user, updateProfile, updatePreferences, signOut } = useAuth();
 

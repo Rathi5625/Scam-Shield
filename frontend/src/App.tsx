@@ -30,6 +30,15 @@ const FamilyProtectionPage = lazy(() =>
 const SettingsPage = lazy(() =>
   import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage }))
 );
+const PrivacyPolicyPage = lazy(() =>
+  import('./pages/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage }))
+);
+const TermsPage = lazy(() =>
+  import('./pages/TermsPage').then((m) => ({ default: m.TermsPage }))
+);
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
+);
 
 const RouteLoadingFallback = () => (
   <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4 font-mono">
@@ -64,6 +73,22 @@ export const App: React.FC = () => {
               <Route index element={<LandingPage />} />
               <Route path="login" element={<LoginPage />} />
               <Route path="signup" element={<SignupPage />} />
+              <Route
+                path="privacy"
+                element={
+                  <Suspense fallback={<RouteLoadingFallback />}>
+                    <PrivacyPolicyPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="terms"
+                element={
+                  <Suspense fallback={<RouteLoadingFallback />}>
+                    <TermsPage />
+                  </Suspense>
+                }
+              />
 
               {/* Onboarding Route (Authenticated, allowed incomplete status) */}
               <Route
@@ -157,7 +182,14 @@ export const App: React.FC = () => {
                   </ProtectedRoute>
                 }
               />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route
+                path="*"
+                element={
+                  <Suspense fallback={<RouteLoadingFallback />}>
+                    <NotFoundPage />
+                  </Suspense>
+                }
+              />
             </Route>
           </Routes>
           </BrowserRouter>

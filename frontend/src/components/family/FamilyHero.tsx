@@ -49,7 +49,13 @@ export const FamilyHero: React.FC<FamilyHeroProps> = ({
                 title={m.displayName}
               >
                 {m.avatarUrl ? (
-                  <img src={m.avatarUrl} alt={m.displayName} className="w-full h-full rounded-full object-cover" />
+                  <img
+                    src={m.avatarUrl}
+                    alt={`Avatar of ${m.displayName}`}
+                    width={28}
+                    height={28}
+                    className="w-full h-full rounded-full object-cover"
+                  />
                 ) : (
                   m.displayName.slice(0, 2).toUpperCase()
                 )}

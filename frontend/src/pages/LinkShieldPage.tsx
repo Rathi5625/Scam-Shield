@@ -21,6 +21,7 @@ import {
   Sparkles,
   ArrowRight,
 } from 'lucide-react';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const PRESET_URLS = [
   {
@@ -41,6 +42,11 @@ const PRESET_URLS = [
 ];
 
 export const LinkShieldPage: React.FC = () => {
+  usePageMeta({
+    title: 'Link Shield Forensics — ScamShield',
+    description: 'Inspect suspicious URLs and domains with zero-network static inspection before opening them in your browser.',
+  });
+
   const [urlInput, setUrlInput] = useState<string>('');
   const [scannedUrl, setScannedUrl] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);

@@ -96,7 +96,7 @@ public class DefaultGeminiApiClient implements GeminiApiClient {
         }
     }
 
-    private Map<String, Object> buildRequestPayload(
+    Map<String, Object> buildRequestPayload(
             String systemInstruction,
             String userPrompt,
             String imageBase64,
@@ -143,8 +143,8 @@ public class DefaultGeminiApiClient implements GeminiApiClient {
         if (imageBase64 != null && !imageBase64.isBlank()) {
             String safeMime = (mimeType != null && !mimeType.isBlank()) ? mimeType : "image/png";
             userParts.add(Map.of(
-                    "inline_data", Map.of(
-                            "mime_type", safeMime,
+                    "inlineData", Map.of(
+                            "mimeType", safeMime,
                             "data", imageBase64.trim()
                     )
             ));

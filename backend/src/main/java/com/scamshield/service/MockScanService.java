@@ -149,58 +149,8 @@ public class MockScanService implements ScanService {
 
     @Override
     public UrlScanResponse scanUrl(UrlScanRequest request) {
-        String url = request.url();
-        log.info("MockScanService: Static heuristic analysis of URL: {}", url);
-
-        String scanId = "URL-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
-        String timestamp = Instant.now().toString();
-
-        List<String> reasons = new ArrayList<>();
-        String lower = url != null ? url.toLowerCase(Locale.ROOT).trim() : "";
-
-        // Heuristic 1: No HTTPS
-        if (!lower.startsWith("https://")) {
-            reasons.add("Insecure transmission: No HTTPS encryption detected");
-        }
-
-        // Heuristic 2: Known shorteners
-        for (String shortener : KNOWN_SHORTENERS) {
-            if (lower.contains(shortener)) {
-                reasons.add("Shortened URL: Destination hidden behind known masking service (" + shortener + ")");
-                break;
-            }
-        }
-
-        // Heuristic 3: IP literal
-        if (IP_PATTERN.matcher(lower).find()) {
-            reasons.add("Suspicious destination: Raw IP address used instead of reputable registered domain");
-        }
-
-        // Heuristic 4: Lookalike / typo-squatting keywords
-        for (String brandKeyword : SUSPICIOUS_BRAND_KEYWORDS) {
-            if (lower.contains(brandKeyword)) {
-                reasons.add("Deceptive lookalike domain targeting Indian financial/identity services (" + brandKeyword + ")");
-                break;
-            }
-        }
-
-        // Heuristic 5: Excessive subdomains or weird TLDs
-        if (lower.contains(".tk") || lower.contains(".xyz") || lower.contains(".top") || lower.contains(".buzz") || lower.contains(".work")) {
-            reasons.add("High-risk top-level domain frequently associated with disposable phishing campaigns");
-        }
-
-        String verdict;
-        if (reasons.isEmpty()) {
-            verdict = "SAFE";
-            reasons.add("Valid HTTPS protocol");
-            reasons.add("Registered domain with reputable namespace");
-            reasons.add("No homoglyph or lookalike patterns identified");
-        } else if (reasons.size() >= 2) {
-            verdict = "SUSPICIOUS";
-        } else {
-            verdict = "SUSPICIOUS";
-        }
-
-        return new UrlScanResponse(scanId, verdict, reasons, timestamp);
+        String url = request != null && request.url() != null ? request.url() : "";
+        log.info("MockScanService: Dynamic lexical analysis of URL: {}", url);
+        return UrlForensicAnalyzer.analyze(url);
     }
 }

@@ -65,8 +65,8 @@ public class FamilyProtectionService {
         FamilyMemberDto ownerMember = new FamilyMemberDto();
         ownerMember.setId("mem_" + UUID.randomUUID().toString().replace("-", "").substring(0, 8));
         ownerMember.setUserId(req.getOwnerId());
-        ownerMember.setDisplayName(req.getOwnerName() != null ? req.getOwnerName() : "Guardian Operative");
-        ownerMember.setEmail(req.getOwnerEmail() != null ? req.getOwnerEmail() : req.getOwnerId() + "@scamshield.internal");
+        ownerMember.setDisplayName(req.getOwnerName() != null ? req.getOwnerName() : "Family Guardian");
+        ownerMember.setEmail(req.getOwnerEmail() != null ? req.getOwnerEmail() : "");
         ownerMember.setRole("OWNER");
         ownerMember.setStatus("ACTIVE");
         ownerMember.setJoinedAt(Instant.now().toString());
@@ -304,6 +304,24 @@ public class FamilyProtectionService {
         entity.setCreatedAt(Instant.now().toString());
 
         ScanHistoryEntity saved = scanHistoryRepository.save(entity);
+
+        if (notificationService != null) {
+            try {
+                notificationService.sendThreatAlert(new com.scamshield.service.notification.NotificationService.ThreatAlertEvent(
+                        UUID.randomUUID().toString(),
+                        saved.getScanId(),
+                        saved.getGroupId(),
+                        saved.getSharedBy(),
+                        saved.getRiskLevel(),
+                        saved.getRiskScore() != null ? saved.getRiskScore() : 85,
+                        saved.getCategory(),
+                        "Family Threat Broadcast",
+                        saved.getCreatedAt()
+                ));
+            } catch (Exception e) {
+                log.warn("Failed to dispatch SNS threat alert for family group {}: {}", saved.getGroupId(), e.getMessage());
+            }
+        }
 
         ThreatShareResponse res = new ThreatShareResponse();
         res.setId(saved.getScanId());

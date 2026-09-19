@@ -48,19 +48,19 @@ export const LandingPage: React.FC = () => {
             ScamShield uses AI to analyze suspicious messages, screenshots, and links — so you can dissect warning signs and act with total confidence.
           </p>
 
-          {/* Action CTA Group */}
+          {/* Action CTA Group (One Clear Primary CTA) */}
           <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
             <Link
               to="/scan"
-              className="relative group inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-primary hover:bg-primary/90 text-color-offwhite font-mono text-sm font-semibold shadow-[0_12px_36px_-8px_rgba(139,13,26,0.6)] hover:shadow-[0_14px_42px_-6px_rgba(139,13,26,0.85)] active:scale-95 transition-all"
+              className="relative group inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-primary hover:bg-primary/90 text-color-offwhite font-mono text-sm font-bold shadow-[0_12px_36px_-8px_rgba(139,13,26,0.7)] hover:shadow-[0_16px_44px_-6px_rgba(139,13,26,0.9)] active:scale-95 transition-all cursor-pointer"
             >
               <Shield className="w-4 h-4" />
-              <span>Scan Something</span>
+              <span>Scan a Message</span>
             </Link>
 
             <a
               href="#how-it-works"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-surface-container-high/60 hover:bg-surface-container-high border border-glass-border text-on-surface font-mono text-sm backdrop-blur-md shadow-sm transition-all"
+              className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-surface-container-high/40 hover:bg-surface-container-high/80 border border-glass-border text-on-surface-variant hover:text-color-offwhite font-mono text-sm backdrop-blur-md shadow-sm transition-all"
             >
               <span>See How It Works</span>
               <ArrowRight className="w-4 h-4 text-crimson-light" />
@@ -188,7 +188,7 @@ export const LandingPage: React.FC = () => {
         </section>
 
         {/* 2. SCANNER CAPABILITIES GRID (Three Feature Cards) */}
-        <section className="w-full py-20 relative">
+        <section id="protection" className="w-full py-20 relative scroll-mt-24">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <div className="font-mono text-xs text-muted-foreground uppercase tracking-widest mb-2 font-semibold">
@@ -459,15 +459,15 @@ export const LandingPage: React.FC = () => {
               </span>
             </div>
 
-            <div className="flex items-center gap-6">
-              <Link to="/#protection" className="hover:text-color-offwhite transition">
-                Protection Policy
+            <div className="flex items-center gap-6 flex-wrap justify-center">
+              <Link to="/privacy" className="hover:text-color-offwhite transition">
+                Privacy Policy
               </Link>
-              <a href="#how-it-works" className="hover:text-color-offwhite transition">
-                Documentation
-              </a>
+              <Link to="/terms" className="hover:text-color-offwhite transition">
+                Terms &amp; Conditions
+              </Link>
               <Link to="/settings" className="hover:text-color-offwhite transition">
-                Security Operations
+                Security Governance
               </Link>
             </div>
 

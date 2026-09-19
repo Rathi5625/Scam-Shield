@@ -28,8 +28,14 @@ import {
   X,
   AlertTriangle,
 } from 'lucide-react';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const HistoryPage: React.FC = () => {
+  usePageMeta({
+    title: 'Scan History — ScamShield',
+    description: 'Review, search, and export your local and synchronized threat scan history with privacy sanitization.',
+  });
+
   const [records, setRecords] = useState<HistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
 

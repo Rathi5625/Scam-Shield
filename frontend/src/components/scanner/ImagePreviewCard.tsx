@@ -58,7 +58,7 @@ export const ImagePreviewCard: React.FC<ImagePreviewCardProps> = ({
       <div className="relative w-full max-h-[380px] rounded-2xl bg-surface-container-lowest/80 border border-glass-border overflow-hidden flex items-center justify-center p-2">
         <img
           src={previewUrl}
-          alt={`Screenshot preview of ${file.name}`}
+          alt={`Forensic inspection view of uploaded screenshot ${file.name}`}
           className="max-h-[340px] max-w-full object-contain rounded-xl shadow-md transition-transform duration-300"
         />
       </div>

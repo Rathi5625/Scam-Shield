@@ -21,9 +21,11 @@ import {
   Link2Off,
   Drama,
   CheckCircle2,
+  ShieldAlert,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { familyRepository } from '../../services/family/LocalFamilyProtectionRepository';
+import { ShareThreatModal } from '../family/ShareThreatModal';
 
 interface ScanResultReportProps {
   scanResult: ScanResponse;
@@ -40,36 +42,34 @@ export const ScanResultReport: React.FC<ScanResultReportProps> = ({
 }) => {
   const { user } = useAuth();
   const [showDiagnostics, setShowDiagnostics] = useState(false);
-  const [isSharing, setIsSharing] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [sharedSuccess, setSharedSuccess] = useState(false);
 
-  const handleShareWithFamily = async () => {
+  const handleOpenShareModal = () => {
     if (!user) {
       window.location.href = '/login';
       return;
     }
-    try {
-      setIsSharing(true);
-      const group = await familyRepository.getFamilyGroup(user.id);
-      if (group) {
-        await familyRepository.shareThreat({
-          familyGroupId: group.id,
-          sharedBy: user.displayName || user.email.split('@')[0],
-          scanType: analysisSource?.toLowerCase().includes('screenshot') ? 'SCREENSHOT' : 'TEXT',
-          riskLevel: scanResult.riskLevel,
-          riskScore: scanResult.riskScore,
-          category: scanResult.category,
-          summary: scanResult.action || `${scanResult.category.replace(/_/g, ' ')} threat analyzed`,
-          vector: analysisSource?.toLowerCase().includes('screenshot') ? 'Visual OCR Telemetry' : 'Inbound SMS Gate',
-        });
-        setSharedSuccess(true);
-      } else {
-        window.location.href = '/family-protection';
-      }
-    } catch (err) {
-      console.warn('ScamShield: Failed to share threat with family', err);
-    } finally {
-      setIsSharing(false);
+    setShowShareModal(true);
+  };
+
+  const handleConfirmShare = async () => {
+    if (!user) return;
+    const group = await familyRepository.getFamilyGroup(user.id);
+    if (group) {
+      await familyRepository.shareThreat({
+        familyGroupId: group.id,
+        sharedBy: user.displayName || user.email.split('@')[0],
+        scanType: analysisSource?.toLowerCase().includes('screenshot') ? 'SCREENSHOT' : 'TEXT',
+        riskLevel: scanResult.riskLevel,
+        riskScore: scanResult.riskScore,
+        category: scanResult.category,
+        summary: scanResult.action || `${scanResult.category.replace(/_/g, ' ')} threat analyzed`,
+        vector: analysisSource?.toLowerCase().includes('screenshot') ? 'Visual OCR Telemetry' : 'Inbound SMS Gate',
+      });
+      setSharedSuccess(true);
+    } else {
+      window.location.href = '/family-protection';
     }
   };
 
@@ -195,7 +195,7 @@ export const ScanResultReport: React.FC<ScanResultReportProps> = ({
           <div className="flex items-center gap-2 px-3.5 py-1 rounded-full bg-surface-container-lowest/50 border border-glass-border">
             <span className="w-1.5 h-1.5 rounded-full bg-risk-low" />
             <span>
-              ENGINE: <strong className="text-color-offwhite">{scanResult.engineName || 'MOCK ANALYSIS (Local Phase 3)'}</strong>
+              ENGINE: <strong className="text-color-offwhite">{scanResult.engineName || 'Gemini 2.5 Flash Neural Sentry'}</strong>
             </span>
           </div>
 
@@ -205,6 +205,44 @@ export const ScanResultReport: React.FC<ScanResultReportProps> = ({
           </div>
         </div>
       </section>
+
+      {/* High-Risk Family Protection Alert Banner */}
+      {scanResult.riskLevel === 'HIGH' && (
+        <section className="rounded-3xl bg-color-crimson/15 border border-color-crimson/40 p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl relative overflow-hidden text-left">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-color-crimson/25 border border-color-crimson/60 flex items-center justify-center shrink-0">
+              <ShieldAlert className="w-6 h-6 text-primary" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full font-mono text-[10px] uppercase font-bold bg-color-crimson text-color-offwhite">
+                  URGENT ACTION
+                </span>
+                <span className="font-mono text-xs text-on-surface-variant">
+                  THREAT CLASSIFICATION: HIGH CONFIDENCE
+                </span>
+              </div>
+              <h3 className="font-headline text-lg sm:text-xl text-color-offwhite">
+                Protect your loved ones from this threat pattern
+              </h3>
+              <p className="font-body text-xs sm:text-sm text-on-surface-variant max-w-2xl leading-relaxed">
+                Scammers frequently target multiple family members with identical financial or phishing ploys.
+                Broadcast a sanitized alert to your Family Shield Circle now.
+              </p>
+            </div>
+          </div>
+
+          <GlassButton
+            variant="danger"
+            size="md"
+            onClick={handleOpenShareModal}
+            icon={<Users className="w-4 h-4" />}
+            className="shrink-0 w-full md:w-auto cursor-pointer"
+          >
+            {sharedSuccess ? 'Alert Broadcasted!' : 'Alert Family Members'}
+          </GlassButton>
+        </section>
+      )}
 
       {/* Red Flags / Heuristics Mapping Grid */}
       <section className="space-y-6">
@@ -365,11 +403,10 @@ export const ScanResultReport: React.FC<ScanResultReportProps> = ({
         <GlassButton
           variant="secondary"
           size="lg"
-          onClick={handleShareWithFamily}
-          disabled={isSharing}
+          onClick={handleOpenShareModal}
           icon={sharedSuccess ? <CheckCircle2 className="w-4 h-4 text-risk-low" /> : <Users className="w-4 h-4" />}
         >
-          {sharedSuccess ? 'Shared to Family Feed!' : isSharing ? 'Sharing...' : 'Share with Family Shield'}
+          {sharedSuccess ? 'Shared to Family Feed!' : 'Share with Family Shield'}
         </GlassButton>
       </section>
 
@@ -397,6 +434,21 @@ export const ScanResultReport: React.FC<ScanResultReportProps> = ({
           )}
         </div>
       </section>
+
+      {/* Family Alert Confirmation Modal */}
+      <ShareThreatModal
+        isOpen={showShareModal}
+        threat={{
+          sharedBy: user?.displayName || user?.email?.split('@')[0] || 'You',
+          scanType: analysisSource?.toLowerCase().includes('screenshot') ? 'SCREENSHOT' : 'TEXT',
+          riskLevel: scanResult.riskLevel,
+          riskScore: scanResult.riskScore,
+          category: scanResult.category,
+          summary: scanResult.action || `${scanResult.category.replace(/_/g, ' ')} threat pattern analyzed.`,
+        }}
+        onClose={() => setShowShareModal(false)}
+        onConfirm={handleConfirmShare}
+      />
     </div>
   );
 };

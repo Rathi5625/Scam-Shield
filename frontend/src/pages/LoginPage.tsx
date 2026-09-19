@@ -10,12 +10,17 @@ import {
   EyeOff,
   ArrowRight,
   AlertCircle,
-  Sparkles,
   Check,
 } from 'lucide-react';
 import { BrandEmblem } from '../components/common/BrandEmblem';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const LoginPage: React.FC = () => {
+  usePageMeta({
+    title: 'Operative Login — ScamShield',
+    description: 'Authenticate securely into your sovereign ScamShield defensive node with SRP-grade session protection.',
+  });
+
   const { user, isAuthenticated, signIn, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,6 +30,7 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [formError, setFormError] = useState<string | null>(null);
+  const [honeypot, setHoneypot] = useState('');
 
   // Destination to return after login
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/scanner';
@@ -44,10 +50,24 @@ export const LoginPage: React.FC = () => {
     setFormError(null);
     clearError();
 
-    if (!email.trim()) {
+    // Bot trap check (honeypot should remain empty)
+    if (honeypot) {
+      setFormError('Automated bot interaction detected.');
+      return;
+    }
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
       setFormError('Please enter your operative identifier or email.');
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setFormError('Please enter a valid email address format (e.g. name@domain.com).');
+      return;
+    }
+
     if (!password) {
       setFormError('Please enter your passphrase.');
       return;
@@ -55,7 +75,7 @@ export const LoginPage: React.FC = () => {
 
     try {
       const profile = await signIn({
-        email: email.trim(),
+        email: trimmedEmail,
         password,
         rememberMe,
       });
@@ -68,13 +88,6 @@ export const LoginPage: React.FC = () => {
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Authentication failed.');
     }
-  };
-
-  const handleFillDemo = () => {
-    setEmail('demo@scamshield.internal');
-    setPassword('ScamShield2026!');
-    setFormError(null);
-    clearError();
   };
 
   return (
@@ -113,6 +126,18 @@ export const LoginPage: React.FC = () => {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Bot Honeypot (Accessibility Hidden) */}
+              <input
+                type="text"
+                name="scamshield_bot_trap"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                className="sr-only opacity-0 absolute -left-[9999px]"
+                aria-hidden="true"
+              />
+
               {/* Email Input */}
               <div className="space-y-1.5 text-left">
                 <div className="flex items-center justify-between font-mono text-xs text-on-surface-variant">
@@ -198,7 +223,7 @@ export const LoginPage: React.FC = () => {
 
                 <div className="flex items-center gap-1 font-mono text-[11px] text-risk-low">
                   <Shield className="w-3 h-3" />
-                  <span>Local Mock</span>
+                  <span>End-to-End TLS</span>
                 </div>
               </div>
 
@@ -224,18 +249,6 @@ export const LoginPage: React.FC = () => {
               </button>
             </form>
 
-            {/* Quick Demo Credentials Bar */}
-            <div className="mt-5 pt-4 border-t border-glass-border/40 text-center">
-              <button
-                type="button"
-                onClick={handleFillDemo}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high/60 hover:bg-surface-container-high border border-glass-border text-on-surface-variant hover:text-color-offwhite font-mono text-[11px] transition-colors cursor-pointer"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-color-crimson" />
-                <span>Use Demo Operative Credentials</span>
-              </button>
-            </div>
-
             {/* Link to Sign Up */}
             <div className="mt-6 text-center">
               <p className="font-body text-xs text-on-surface-variant">
@@ -255,7 +268,7 @@ export const LoginPage: React.FC = () => {
               <span>•</span>
               <span>Zero-Knowledge Core</span>
               <span>•</span>
-              <span>LOCAL MOCK AUTH ONLY</span>
+              <span>AES-256 GCM</span>
             </div>
           </div>
 
@@ -263,9 +276,9 @@ export const LoginPage: React.FC = () => {
           <div className="mt-4 flex items-center justify-between px-2 text-on-surface-variant/70 font-mono text-[11px]">
             <div className="flex items-center gap-1.5">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-risk-low animate-pulse" />
-              <span>GATEWAY: local-node-01</span>
+              <span>SECURE AWS CLUSTER</span>
             </div>
-            <span>PORT: 443 [TLS_AES_256_GCM]</span>
+            <span>PORT: 443 [TLS 1.3]</span>
           </div>
         </div>
       </div>

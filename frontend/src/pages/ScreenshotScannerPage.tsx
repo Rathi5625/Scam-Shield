@@ -18,8 +18,14 @@ import {
   ShieldAlert,
   ArrowLeft,
 } from 'lucide-react';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const ScreenshotScannerPage: React.FC = () => {
+  usePageMeta({
+    title: 'Screenshot Scanner — ScamShield',
+    description: 'Upload screenshots of suspicious messages, fake banking apps, and invoices for multimodal AI forensic analysis.',
+  });
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -82,8 +88,8 @@ export const ScreenshotScannerPage: React.FC = () => {
         reader.readAsDataURL(selectedFile);
       });
 
-      const mockS3Key = `screenshots/${selectedFile.name.replace(/\s+/g, '_')}`;
-      const res = await scanService.scanImage(mockS3Key, base64Data, selectedFile.type);
+      const s3Key = `screenshots/${Date.now()}_${selectedFile.name.replace(/\s+/g, '_')}`;
+      const res = await scanService.scanImage(s3Key, base64Data, selectedFile.type);
       setScanResult(res);
 
       // Auto-save to local history vault (strictly stores filename metadata, NEVER binary image data)

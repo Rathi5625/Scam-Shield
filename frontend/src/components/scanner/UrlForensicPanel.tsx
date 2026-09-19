@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { familyRepository } from '../../services/family/LocalFamilyProtectionRepository';
+import { ShareThreatModal } from '../family/ShareThreatModal';
 
 interface UrlForensicPanelProps {
   url: string;
@@ -29,40 +30,38 @@ export const UrlForensicPanel: React.FC<UrlForensicPanelProps> = ({
 }) => {
   const { user } = useAuth();
   const [copied, setCopied] = useState(false);
-  const [isSharing, setIsSharing] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [sharedSuccess, setSharedSuccess] = useState(false);
 
-  const handleShareWithFamily = async () => {
+  const handleOpenShareModal = () => {
     if (!user) {
       window.location.href = '/login';
       return;
     }
-    try {
-      setIsSharing(true);
-      const group = await familyRepository.getFamilyGroup(user.id);
-      if (group) {
-        const riskLevel = result.verdict === 'SAFE' ? 'LOW' : result.verdict === 'SUSPICIOUS' ? 'MEDIUM' : 'HIGH';
-        const riskScore = riskLevel === 'HIGH' ? 88 : riskLevel === 'MEDIUM' ? 62 : 12;
+    setShowShareModal(true);
+  };
 
-        await familyRepository.shareThreat({
-          familyGroupId: group.id,
-          sharedBy: user.displayName || user.email.split('@')[0],
-          scanType: 'LINK',
-          riskLevel,
-          riskScore,
-          category: 'PHISHING',
-          summary: result.reasons?.[0] || 'Deceptive link forensic analysis flagged suspicious redirection.',
-          vector: 'URL Inspection',
-          targetDomain: url,
-        });
-        setSharedSuccess(true);
-      } else {
-        window.location.href = '/family-protection';
-      }
-    } catch (err) {
-      console.warn('ScamShield: Failed to share URL threat with family', err);
-    } finally {
-      setIsSharing(false);
+  const handleConfirmShare = async () => {
+    if (!user) return;
+    const group = await familyRepository.getFamilyGroup(user.id);
+    if (group) {
+      const riskLevel = result.verdict === 'SAFE' ? 'LOW' : result.verdict === 'SUSPICIOUS' ? 'MEDIUM' : 'HIGH';
+      const riskScore = result.riskScore ?? (riskLevel === 'HIGH' ? 88 : riskLevel === 'MEDIUM' ? 62 : 12);
+
+      await familyRepository.shareThreat({
+        familyGroupId: group.id,
+        sharedBy: user.displayName || user.email.split('@')[0],
+        scanType: 'LINK',
+        riskLevel,
+        riskScore,
+        category: 'PHISHING',
+        summary: result.reasons?.[0] || 'Deceptive link forensic analysis flagged suspicious redirection.',
+        vector: 'URL Inspection',
+        targetDomain: url,
+      });
+      setSharedSuccess(true);
+    } else {
+      window.location.href = '/family-protection';
     }
   };
 
@@ -127,7 +126,7 @@ export const UrlForensicPanel: React.FC<UrlForensicPanelProps> = ({
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8 animate-fadeIn">
       {/* Primary Risk Verdict Card matching Stitch screen 78aa6010... */}
-      <div className="relative rounded-3xl bg-glass-surface backdrop-blur-2xl p-6 sm:p-10 shadow-2xl overflow-hidden border border-glass-border">
+      <div className="relative rounded-3xl bg-surface-container-low/80 backdrop-blur-2xl p-6 sm:p-10 shadow-2xl overflow-hidden border border-glass-border">
         {/* Glow ambient overlay */}
         <div
           className={`absolute -right-20 -top-20 w-80 h-80 blur-[90px] rounded-full pointer-events-none ${
@@ -187,7 +186,7 @@ export const UrlForensicPanel: React.FC<UrlForensicPanelProps> = ({
                 isSuspicious ? 'text-primary' : 'text-risk-low'
               }`}
             >
-              {isSuspicious ? '84/100' : '15/100'}
+              {result.riskScore != null ? `${result.riskScore}/100` : isSuspicious ? '84/100' : '15/100'}
             </span>
           </div>
         </div>
@@ -382,13 +381,28 @@ export const UrlForensicPanel: React.FC<UrlForensicPanelProps> = ({
         <GlassButton
           variant="secondary"
           size="lg"
-          onClick={handleShareWithFamily}
-          disabled={isSharing}
+          onClick={handleOpenShareModal}
           icon={sharedSuccess ? <CheckCircle2 className="w-4 h-4 text-risk-low" /> : <Users className="w-4 h-4" />}
         >
-          {sharedSuccess ? 'Shared to Family Feed!' : isSharing ? 'Sharing...' : 'Share with Family Shield'}
+          {sharedSuccess ? 'Shared to Family Feed!' : 'Share with Family Shield'}
         </GlassButton>
       </div>
+
+      {/* Family Alert Confirmation Modal */}
+      <ShareThreatModal
+        isOpen={showShareModal}
+        threat={{
+          sharedBy: user?.displayName || user?.email?.split('@')[0] || 'You',
+          scanType: 'LINK',
+          riskLevel: result.verdict === 'SAFE' ? 'LOW' : result.verdict === 'SUSPICIOUS' ? 'MEDIUM' : 'HIGH',
+          riskScore: result.riskScore ?? (result.verdict === 'HIGH_RISK' ? 88 : result.verdict === 'SUSPICIOUS' ? 65 : 15),
+          category: 'SUSPICIOUS_LINK',
+          summary: result.reasons?.[0] || 'Lexical forensic analysis flagged deceptive structural characteristics.',
+          targetDomain: url,
+        }}
+        onClose={() => setShowShareModal(false)}
+        onConfirm={handleConfirmShare}
+      />
     </div>
   );
 };

@@ -37,7 +37,9 @@ export const FamilyMemberCard: React.FC<FamilyMemberCardProps> = ({
             {member.avatarUrl ? (
               <img
                 src={member.avatarUrl}
-                alt={member.displayName}
+                alt={`Profile portrait of ${member.displayName} (${member.relationship || 'Guardian'})`}
+                width={56}
+                height={56}
                 className={`w-14 h-14 rounded-full object-cover ring-2 ${
                   isAttentionRequired ? 'ring-color-crimson' : 'ring-risk-low/60'
                 }`}

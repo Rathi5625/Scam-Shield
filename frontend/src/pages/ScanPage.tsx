@@ -20,8 +20,14 @@ import {
   AlertTriangle,
   EyeOff,
 } from 'lucide-react';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const ScanPage: React.FC = () => {
+  usePageMeta({
+    title: 'Threat Scanner — ScamShield',
+    description: 'Scan suspicious SMS, emails, and chat messages for financial deception, social engineering, and urgent coercion.',
+  });
+
   // Text Scanner State
   const [messageInput, setMessageInput] = useState('');
   const [charCount, setCharCount] = useState(0);
