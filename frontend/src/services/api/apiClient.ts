@@ -32,7 +32,11 @@ class ApiClient {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api').replace(/\/$/, '');
+    let base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api').replace(/\/$/, '');
+    if (!base.endsWith('/api')) {
+      base = `${base}/api`;
+    }
+    this.baseUrl = base;
   }
 
   public getBaseUrl(): string {
@@ -40,7 +44,10 @@ class ApiClient {
   }
 
   private buildUrl(path: string, params?: Record<string, string | number | boolean | undefined>): string {
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    let cleanPath = path.startsWith('/') ? path : `/${path}`;
+    if (this.baseUrl.endsWith('/api') && cleanPath.startsWith('/api/')) {
+      cleanPath = cleanPath.substring(4);
+    }
     const url = new URL(`${this.baseUrl}${cleanPath}`);
 
     if (params) {

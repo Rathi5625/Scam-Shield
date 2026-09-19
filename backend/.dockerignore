@@ -1,0 +1,28 @@
+# Environment files and local secrets (CRITICAL)
+.env
+.env.*
+*.pem
+*.key
+*.cert
+*.token
+aws_credentials
+
+# Build outputs and dependencies
+target/
+*.class
+*.jar
+node_modules/
+
+# Local storage and cache
+storage/
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Version control and documentation
+.git/
+.gitignore
+*.md
+*.log

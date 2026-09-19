@@ -1,6 +1,7 @@
 import type { ApiError } from '../types/api';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+const rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api').replace(/\/$/, '');
+const BASE_URL = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
 
 export class ApiException extends Error {
   error: string;
@@ -15,7 +16,11 @@ export class ApiException extends Error {
 }
 
 export async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
+  let cleanEndpoint = endpoint;
+  if (BASE_URL.endsWith('/api') && cleanEndpoint.startsWith('/api/')) {
+    cleanEndpoint = cleanEndpoint.substring(4);
+  }
+  const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${cleanEndpoint}`;
 
   const headers = {
     'Content-Type': 'application/json',
