@@ -53,26 +53,8 @@ export class LocalAuthProvider implements AuthProvider {
       this.users = [];
     }
 
-    // Seed default demo operative if no users exist
-    if (!Array.isArray(this.users) || this.users.length === 0) {
+    if (!Array.isArray(this.users)) {
       this.users = [];
-      const demoHash = await hashPassphrase('ScamShield2026!');
-      const demoUser: StoredMockUser = {
-        id: 'usr_sentinel_001',
-        email: 'demo@scamshield.internal',
-        displayName: 'Agent Sentinel',
-        passwordHash: demoHash,
-        createdAt: new Date().toISOString(),
-        onboardingCompleted: true,
-        preferences: {
-          aggressivePhishingShield: true,
-          realtimeHeuristics: true,
-          familyAlerts: true,
-          ephemeralLogging: true,
-        },
-      };
-      this.users.push(demoUser);
-      this.saveUsers();
     }
 
     // Load active session from storage

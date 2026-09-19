@@ -35,7 +35,7 @@ function getActiveUserId(): string {
   } catch {
     // ignore
   }
-  return 'usr_demo_sentinel';
+  return '';
 }
 
 function parseCategory(raw?: string): ScamCategory {
@@ -132,6 +132,7 @@ function mapBackendToHistoryRecord(item: BackendScanItem): HistoryRecord {
 export class ApiScanHistoryRepository implements ScanHistoryRepository {
   async saveScan(record: HistoryRecord): Promise<void> {
     const userId = record.userId || getActiveUserId();
+    if (!userId) return;
     const flags = 'redFlags' in record.originalResult ? record.originalResult.redFlags : [];
     const action = 'action' in record.originalResult ? record.originalResult.action : undefined;
 
@@ -150,6 +151,7 @@ export class ApiScanHistoryRepository implements ScanHistoryRepository {
 
   async getAllScans(): Promise<HistoryRecord[]> {
     const userId = getActiveUserId();
+    if (!userId) return [];
     try {
       const res = await apiClient.get<BackendScanListResponse>('/history', {
         userId,
@@ -164,6 +166,7 @@ export class ApiScanHistoryRepository implements ScanHistoryRepository {
 
   async getScanById(id: string): Promise<HistoryRecord | null> {
     const userId = getActiveUserId();
+    if (!userId) return null;
     try {
       const item = await apiClient.get<BackendScanItem>(`/history/${encodeURIComponent(id)}`, {
         userId,
@@ -176,6 +179,7 @@ export class ApiScanHistoryRepository implements ScanHistoryRepository {
 
   async deleteScan(id: string): Promise<boolean> {
     const userId = getActiveUserId();
+    if (!userId) return false;
     try {
       await apiClient.delete(`/history/${encodeURIComponent(id)}`, { userId });
       return true;
@@ -186,6 +190,7 @@ export class ApiScanHistoryRepository implements ScanHistoryRepository {
 
   async clearAllScans(): Promise<void> {
     const userId = getActiveUserId();
+    if (!userId) return;
     try {
       await apiClient.delete('/history', { userId });
     } catch (e) {

@@ -24,8 +24,8 @@ export const scanService = {
     return {
       ...response,
       latencySeconds: response.latencySeconds !== undefined ? response.latencySeconds : latencySeconds,
-      confidence: response.confidence !== undefined ? response.confidence : 94.0,
-      engineName: response.engineName || 'Google Gemini Threat Engine',
+      confidence: response.confidence,
+      engineName: 'AI Threat Intelligence',
     };
   },
 
@@ -43,8 +43,8 @@ export const scanService = {
     return {
       ...response,
       latencySeconds: response.latencySeconds ?? Number(((endTime - startTime) / 1000).toFixed(2)),
-      confidence: response.confidence ?? 95.4,
-      engineName: response.engineName ?? 'Google Gemini Multimodal Engine',
+      confidence: response.confidence,
+      engineName: 'AI Threat Intelligence',
     };
   },
 

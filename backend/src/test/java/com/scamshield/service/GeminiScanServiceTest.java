@@ -92,12 +92,12 @@ class GeminiScanServiceTest {
                   "riskLevel": "HIGH",
                   "riskScore": 92,
                   "threatCategory": "PHISHING",
-                  "confidence": 95.0,
+                  "confidence": 0.95,
                   "summary": "Credential harvesting vector targeting net banking credentials",
                   "explanation": "Fake security alert directing user to suspicious credential collection portal.",
                   "redFlags": [
                     { "type": "SENSITIVE_INFO_REQUEST", "label": "Requests OTP and password entry", "score": 96 },
-                    { "type": "IMPERSONATION", "label": "Security alert impersonation", "score": 90 }
+                    { "type": "INSECURE_PROTOCOL", "label": "Uses plain HTTP protocol", "score": 85 }
                   ],
                   "recommendedAction": "Never enter OTP or passwords on third-party links.",
                   "indicators": ["verify credentials", "enter OTP"]
@@ -115,7 +115,11 @@ class GeminiScanServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.riskLevel()).isEqualTo(RiskLevel.HIGH);
         assertThat(response.category()).isEqualTo(ScamCategory.PHISHING);
+        // Confidence <= 1.0 is defensively multiplied by 100 to 0-100 scale
+        assertThat(response.confidence()).isEqualTo(95.0);
         assertThat(response.redFlags()).anyMatch(flag -> flag.type() == RedFlagType.SENSITIVE_INFO_REQUEST);
+        // INSECURE_PROTOCOL maps to SUSPICIOUS_LINK via fallback keyword matching
+        assertThat(response.redFlags()).anyMatch(flag -> flag.type() == RedFlagType.SUSPICIOUS_LINK);
     }
 
     // C. Fake reward scam
@@ -295,10 +299,15 @@ class GeminiScanServiceTest {
         assertThat(response.action()).contains("Threat telemetry inconclusive");
     }
 
-    // I. Screenshot multimodal request
+    // I. Screenshot multimodal request — two-pass: OCR then analysis
     @Test
     void scanImageMultimodalScreenshotRequest() {
         String fakeBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+
+        // Pass 1 (OCR): returns empty URL list — no URLs visible in this fake image
+        String ocrJson = "{ \"urlsFound\": [] }";
+
+        // Pass 2 (Analysis): real threat assessment JSON
         String aiJson = """
                 {
                   "riskLevel": "HIGH",
@@ -316,7 +325,9 @@ class GeminiScanServiceTest {
                 }
                 """;
 
+        // First call = OCR pass, second call = analysis pass
         when(geminiClient.generateStructuredContent(any(), any(), eq(fakeBase64), eq("image/png")))
+                .thenReturn(ocrJson)
                 .thenReturn(aiJson);
 
         ImageScanRequest request = new ImageScanRequest("screenshots/test.png", fakeBase64, "image/png");
@@ -328,6 +339,8 @@ class GeminiScanServiceTest {
         assertThat(response.riskScore()).isEqualTo(96);
         assertThat(response.category()).isEqualTo(ScamCategory.BANKING_KYC);
         assertThat(response.engineName()).isEqualTo("Google Gemini / gemini-3.6-flash");
+        // Verify two Gemini calls were made (OCR pass + analysis pass)
+        verify(geminiClient, times(2)).generateStructuredContent(any(), any(), eq(fakeBase64), eq("image/png"));
     }
 
     // J. Fast-path UNKNOWN for trivial text under 10 chars

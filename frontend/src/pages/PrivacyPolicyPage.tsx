@@ -62,14 +62,14 @@ export const PrivacyPolicyPage: React.FC = () => {
               <h2>1. Account Information & Authentication</h2>
             </div>
             <p>
-              When you create an operative profile on ScamShield, your authentication credentials (email address, display
-              name, and password verifier) are processed securely through Amazon Cognito User Pools located in the AWS
-              ap-south-1 (Mumbai) region. Passwords are never stored in plaintext; they are cryptographically hashed and
-              verified using the Secure Remote Password (SRP) protocol.
+              When you create an account profile on ScamShield, your authentication credentials (email address, display
+              name, and password verifier) are processed securely through enterprise identity and authentication services.
+              Passwords are never stored in plaintext; they are cryptographically hashed and verified using the Secure
+              Remote Password (SRP) protocol.
             </p>
             <p>
               Session authorization tokens (JWTs) are stored on your local device in browser storage (<code className="font-mono text-color-offwhite bg-surface-container px-1.5 py-0.5 rounded">localStorage</code> / <code className="font-mono text-color-offwhite bg-surface-container px-1.5 py-0.5 rounded">sessionStorage</code>)
-              and transmitted across TLS 1.3 encrypted HTTPS headers.
+              and transmitted across modern TLS encrypted HTTPS headers.
             </p>
           </section>
 
@@ -80,16 +80,16 @@ export const PrivacyPolicyPage: React.FC = () => {
               <h2>2. Scan Inputs & Ephemeral AI Processing</h2>
             </div>
             <p>
-              When you submit an inbound SMS snippet, WhatsApp message, or screenshot for fraud detection:
+              When you submit an inbound SMS snippet, messaging conversation, or screenshot for fraud detection:
             </p>
             <ul className="list-disc pl-5 space-y-2">
               <li>
-                <strong>Ephemeral Execution:</strong> The payload is ingested into volatile container memory on Amazon ECS Fargate
+                <strong>Ephemeral Execution:</strong> The payload is ingested into volatile server memory
                 strictly for the duration of inference.
               </li>
               <li>
-                <strong>AI Inference:</strong> Content is analyzed using Google Gemini API enterprise endpoints configured with
-                zero-retention policies. Your private inputs are not used to train or fine-tune public Gemini foundation models.
+                <strong>AI Inference:</strong> Content is analyzed using enterprise neural threat intelligence models configured with
+                zero-retention policies. Your private inputs are not used to train or fine-tune public foundation models.
               </li>
               <li>
                 <strong>Prompt Injection Defense:</strong> All user content is encapsulated within immutable safety delimiters
@@ -167,8 +167,8 @@ export const PrivacyPolicyPage: React.FC = () => {
                 <strong>Local History Purge:</strong> You can purge all client-stored scan history at any time with a single click from the History dashboard.
               </li>
               <li>
-                <strong>Account & Cloud Deletion:</strong> You may request complete erasure of your Cognito profile, DynamoDB history, and S3 evidence
-                by contacting our privacy desk at <code className="font-mono text-color-offwhite">privacy@scamshield.internal</code>.
+                <strong>Account & Cloud Deletion:</strong> You may request complete erasure of your profile, scan history, and stored artifacts
+                by contacting our privacy desk at <code className="font-mono text-color-offwhite">privacy@scamshield.org</code>.
               </li>
             </ul>
           </section>
@@ -180,12 +180,12 @@ export const PrivacyPolicyPage: React.FC = () => {
               <h2>7. Third-Party Infrastructure Sub-Processors</h2>
             </div>
             <p>
-              ScamShield operates on enterprise-grade cloud partners:
+              ScamShield operates strictly on audited enterprise-grade cloud partners:
             </p>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong>Amazon Web Services (ap-south-1):</strong> Compute (ECS Fargate), Database (DynamoDB), Storage (S3), Notifications (SNS), Secrets (Secrets Manager).</li>
-              <li><strong>Google Cloud (Gemini API):</strong> Multimodal LLM threat classification via enterprise API.</li>
-              <li><strong>Vercel:</strong> Global edge delivery of the web application frontend.</li>
+              <li><strong>Enterprise Cloud Infrastructure:</strong> Secure container compute, isolated encrypted database vaults, encrypted storage, and real-time notification relays.</li>
+              <li><strong>Enterprise AI Intelligence:</strong> Neural language and vision threat classification via secure enterprise API endpoints with zero data retention.</li>
+              <li><strong>Secure Edge Delivery:</strong> Global CDN and edge delivery of the web application frontend with strict TLS encryption.</li>
             </ul>
           </section>
         </div>

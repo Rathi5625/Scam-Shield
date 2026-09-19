@@ -270,7 +270,7 @@ export class ApiFamilyProtectionRepository implements FamilyProtectionRepository
           sharedBy: t.sharedBy,
           scanType,
           riskLevel: (t.riskLevel || 'HIGH') as 'LOW' | 'MEDIUM' | 'HIGH',
-          riskScore: t.riskScore ?? 80,
+          riskScore: t.riskScore ?? 0,
           category: t.category,
           summary: t.summary,
           vector: t.vector,
@@ -305,7 +305,7 @@ export class ApiFamilyProtectionRepository implements FamilyProtectionRepository
       sharedBy: res.sharedBy,
       scanType,
       riskLevel: (res.riskLevel || 'HIGH') as 'LOW' | 'MEDIUM' | 'HIGH',
-      riskScore: res.riskScore ?? 80,
+      riskScore: res.riskScore ?? 0,
       category: res.category,
       summary: res.summary,
       vector: res.vector,
@@ -347,7 +347,11 @@ export class ApiFamilyProtectionRepository implements FamilyProtectionRepository
   }
 
   async getAnalytics(familyGroupId: string): Promise<FamilyAnalytics> {
-    const threats = await this.getSharedThreatFeed(familyGroupId);
+    const [threats, invites] = await Promise.all([
+      this.getSharedThreatFeed(familyGroupId).catch(() => []),
+      this.getInvites(familyGroupId).catch(() => []),
+    ]);
+
     let high = 0;
     let med = 0;
     let low = 0;
@@ -359,18 +363,21 @@ export class ApiFamilyProtectionRepository implements FamilyProtectionRepository
     });
 
     const total = threats.length;
-    const deflectionRate = total > 0 ? Math.round(((high + med) / total) * 100) : 94;
+    const deflectionRate = total > 0 ? Math.round(((high + med) / total) * 100) : 0;
+    const linkChecks = threats.filter(
+      (t) => t.scanType === 'LINK' || (t.vector && t.vector.toLowerCase().includes('link'))
+    ).length;
 
     return {
       totalSharedThreats: total,
       highRiskThreats: high,
       mediumRiskThreats: med,
       lowRiskThreats: low,
-      activeMembers: 4,
-      pendingInvites: 0,
+      activeMembers: 1, // At minimum the owner
+      pendingInvites: invites.length,
       deflectionRate,
-      estimatedSavings: high * 850 + med * 120 + 3420,
-      linkChecksCount: total * 18 + 142,
+      estimatedSavings: 0,
+      linkChecksCount: linkChecks,
     };
   }
 }

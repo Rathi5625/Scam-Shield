@@ -53,13 +53,13 @@ export const PendingInvitesDrawer: React.FC<PendingInvitesDrawerProps> = ({
         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high w-fit mb-3 border border-glass-border">
           <Clock className="w-3.5 h-3.5 text-tertiary" />
           <span className="font-mono text-[10px] uppercase tracking-wider text-color-offwhite">
-            LOCAL INVITATION RADAR
+            PENDING INVITATIONS
           </span>
         </div>
 
         <h3 className="font-headline text-2xl text-color-offwhite">Pending Invitations</h3>
         <p className="font-body text-xs text-on-surface-variant mt-1 leading-relaxed">
-          Inspect or simulate accepting mock invitations without leaving your local environment.
+          Review and respond to family protection invitations sent to you.
         </p>
 
         <div className="mt-6 space-y-3 max-h-80 overflow-y-auto pr-1">

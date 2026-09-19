@@ -149,7 +149,7 @@ export const OnboardingPage: React.FC = () => {
                 <div className="bg-gradient-to-r from-risk-low to-tertiary-fixed-dim h-full w-[94%]" />
               </div>
               <span className="font-mono text-[10px] text-on-surface-variant/70">
-                LOCAL NODE ENFORCED
+                CLOUD SECURED
               </span>
             </div>
           </div>

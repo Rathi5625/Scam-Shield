@@ -11,9 +11,24 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
+/**
+ * Development-only fixture seeder for demo data.
+ *
+ * <p>FIX 8: This bean is ONLY registered when the property
+ * {@code scamshield.seed-demo-data=true} is set explicitly.
+ * {@code matchIfMissing=false} means the bean does NOT load when the property is absent,
+ * which is the case in production (the ECS task definition does not set this env var).
+ * It is therefore structurally impossible for this class to seed data in production.
+ */
 @Service
+@ConditionalOnProperty(
+        name = "scamshield.seed-demo-data",
+        havingValue = "true",
+        matchIfMissing = false
+)
 public class DataSeederService {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeederService.class);

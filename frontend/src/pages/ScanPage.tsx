@@ -87,22 +87,6 @@ export const ScanPage: React.FC = () => {
     setError(null);
   };
 
-  const loadExample = (type: 'kyc' | 'job' | 'safe') => {
-    let sample = '';
-    if (type === 'kyc') {
-      sample =
-        'URGENT: Your SBI bank account will be blocked within 2 hours due to pending KYC verification. Click http://bit.ly/sbi-kyc-verify to update PAN now. Your OTP is 482913.';
-    } else if (type === 'job') {
-      sample =
-        'Congratulations! You have been selected for Part Time Amazon Work From Home job. Earn Rs 5000 daily. Contact on Telegram.';
-    } else {
-      sample = 'Hey team, let us meet tomorrow at 10:00 AM in the conference room for product sync.';
-    }
-    setMessageInput(sample);
-    setCharCount(sample.length);
-    setError(null);
-  };
-
   const handleAnalyzeText = async () => {
     const trimmed = messageInput.trim();
     if (!trimmed) {
@@ -222,21 +206,7 @@ export const ScanPage: React.FC = () => {
 
                   {/* Textarea Footer Controls */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-3 mt-2 border-t border-border-subtle/70 gap-2">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <button
-                        type="button"
-                        onClick={() => loadExample('kyc')}
-                        className="font-mono text-xs uppercase px-3 py-1.5 rounded-full bg-surface-container-high/60 hover:bg-surface-container-high text-on-surface-variant hover:text-color-offwhite transition-colors border border-glass-border cursor-pointer"
-                      >
-                        Load Bank KYC
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => loadExample('job')}
-                        className="font-mono text-xs uppercase px-3 py-1.5 rounded-full bg-surface-container-high/60 hover:bg-surface-container-high text-on-surface-variant hover:text-color-offwhite transition-colors border border-glass-border cursor-pointer"
-                      >
-                        Load Job Offer
-                      </button>
+                    <div className="flex items-center gap-2">
                       {messageInput && (
                         <button
                           type="button"
@@ -245,6 +215,7 @@ export const ScanPage: React.FC = () => {
                           className="text-on-surface-variant/70 hover:text-color-offwhite transition-colors p-1.5 rounded-full hover:bg-glass-surface flex items-center justify-center cursor-pointer"
                         >
                           <X className="w-4 h-4" />
+                          <span className="font-mono text-xs ml-1">Clear</span>
                         </button>
                       )}
                     </div>

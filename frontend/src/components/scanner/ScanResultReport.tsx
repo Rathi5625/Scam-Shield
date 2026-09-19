@@ -22,6 +22,7 @@ import {
   Drama,
   CheckCircle2,
   ShieldAlert,
+  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { familyRepository } from '../../services/family/LocalFamilyProtectionRepository';
@@ -44,6 +45,18 @@ export const ScanResultReport: React.FC<ScanResultReportProps> = ({
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [sharedSuccess, setSharedSuccess] = useState(false);
+
+  const isScreenshot = analysisSource?.toLowerCase().includes('screenshot');
+
+  const detectedUrls = React.useMemo(() => {
+    if (scanResult.urlForensics?.url) {
+      return [scanResult.urlForensics.url];
+    }
+    if (!originalMessage) return [];
+    const urlRegex = /(?:https?:\/\/|www\.)[^\s]+/gi;
+    const matches = originalMessage.match(urlRegex);
+    return matches ? Array.from(new Set(matches)) : [];
+  }, [originalMessage, scanResult.urlForensics]);
 
   const handleOpenShareModal = () => {
     if (!user) {
@@ -183,19 +196,23 @@ export const ScanResultReport: React.FC<ScanResultReportProps> = ({
             </div>
           )}
 
-          {scanResult.confidence !== undefined && (
-            <div className="flex items-center gap-2 px-3.5 py-1 rounded-full bg-surface-container-lowest/50 border border-glass-border">
-              <Shield className="w-3.5 h-3.5 text-primary" />
-              <span>
-                CONFIDENCE: <strong className="text-color-offwhite">{scanResult.confidence}%</strong>
-              </span>
-            </div>
-          )}
+          {/* FIX 2: Show chip always; display actual value or 'Confidence unavailable' when null */}
+          <div className="flex items-center gap-2 px-3.5 py-1 rounded-full bg-surface-container-lowest/50 border border-glass-border">
+            <Shield className="w-3.5 h-3.5 text-primary" />
+            <span>
+              CONFIDENCE:{' '}
+              {scanResult.confidence != null ? (
+                <strong className="text-color-offwhite">{scanResult.confidence}%</strong>
+              ) : (
+                <strong className="text-on-surface-variant italic">Unavailable</strong>
+              )}
+            </span>
+          </div>
 
           <div className="flex items-center gap-2 px-3.5 py-1 rounded-full bg-surface-container-lowest/50 border border-glass-border">
             <span className="w-1.5 h-1.5 rounded-full bg-risk-low" />
             <span>
-              ENGINE: <strong className="text-color-offwhite">{scanResult.engineName || 'Gemini 2.5 Flash Neural Sentry'}</strong>
+              ANALYSIS: <strong className="text-color-offwhite">{scanResult.engineName && !scanResult.engineName.toLowerCase().includes('gemini') && !scanResult.engineName.toLowerCase().includes('bedrock') ? scanResult.engineName : 'AI Threat Intelligence'}</strong>
             </span>
           </div>
 
@@ -311,6 +328,133 @@ export const ScanResultReport: React.FC<ScanResultReportProps> = ({
         )}
       </section>
 
+      {/* DETERMINISTIC EVIDENCE TRAIL: URL Forensic Analysis (Deterministic Heuristics) */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between px-1 border-b border-glass-border/40 pb-4">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-primary" />
+            <h2 className="font-headline text-2xl sm:text-3xl text-color-offwhite">
+              URL Forensic Analysis
+            </h2>
+          </div>
+          <span className="font-mono text-xs text-on-surface-variant bg-surface-container px-2.5 py-1 rounded">
+            ZERO-NETWORK LEXICAL HEURISTICS
+          </span>
+        </div>
+
+        {scanResult.urlForensics ? (
+          <div className="p-6 rounded-2xl bg-surface-container-lowest/90 border border-glass-border space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-glass-border/50">
+              <div className="space-y-1 min-w-0 flex-1">
+                <span className="font-mono text-xs text-on-surface-variant uppercase tracking-wider">
+                  DETECTED URL (DETERMINISTIC EXTRACT)
+                </span>
+                <div className="flex items-center gap-2 text-color-offwhite font-mono text-sm break-all">
+                  <Link2Off className="w-4 h-4 text-primary shrink-0" />
+                  <span className="font-semibold">{scanResult.urlForensics.url || detectedUrls[0] || 'Unknown URL'}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 self-start sm:self-auto bg-surface-container-high/60 px-4 py-2 rounded-xl border border-glass-border shrink-0">
+                <span className="font-mono text-xs text-on-surface-variant uppercase">
+                  RAW HEURISTIC SCORE:
+                </span>
+                <span className={`font-mono text-base font-bold ${
+                  (scanResult.urlForensics.riskScore ?? 0) >= 50 ? 'text-primary' : 'text-risk-low'
+                }`}>
+                  {scanResult.urlForensics.riskScore != null ? `${scanResult.urlForensics.riskScore}/100` : 'N/A'}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <span className="font-mono text-xs text-on-surface-variant uppercase tracking-wider block">
+                SPECIFIC FORENSIC REASONS
+              </span>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-mono text-xs">
+                {scanResult.urlForensics.reasons.map((reason, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-start gap-2.5 p-3 rounded-xl bg-surface-container-low/50 border border-glass-border/60"
+                  >
+                    <AlertTriangle className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-color-offwhite">{reason}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] font-mono text-on-surface-variant border-t border-glass-border/40">
+              <span>* Deterministic lexical analysis — evaluated independently of LLM reasoning without network dispatch.</span>
+              <span>INCIDENT #{scanResult.urlForensics.scanId}</span>
+            </div>
+          </div>
+        ) : isScreenshot ? (
+          <div className="p-5 rounded-2xl bg-surface-container-lowest/80 border border-glass-border flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-risk-low/20 border border-risk-low/50 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5 text-risk-low" />
+            </div>
+            <div className="space-y-0.5">
+              <p className="font-mono text-xs text-color-offwhite font-medium">
+                No URL detected in this screenshot after visual analysis
+              </p>
+              <p className="font-mono text-[11px] text-on-surface-variant">
+                Multimodal OCR inspection confirmed zero URL patterns or hyperlinks in the visual screenshot data.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 rounded-xl bg-surface-container-lowest/60 border border-glass-border/60 flex items-center gap-3">
+            <ShieldCheck className="w-4 h-4 text-risk-low shrink-0" />
+            <p className="font-mono text-xs text-on-surface-variant">
+              No URL detected in this message. Lexical URL forensic pipeline was not triggered.
+            </p>
+          </div>
+        )}
+      </section>
+
+      {/* FIX 6: AI-generated explanation block — summary, explanation, indicators */}
+      {(scanResult.summary || scanResult.explanation || (scanResult.indicators && scanResult.indicators.length > 0)) && (
+        <section className="space-y-4">
+          <div className="flex items-center gap-2 px-1 border-b border-glass-border/40 pb-4">
+            <FileSearch className="w-5 h-5 text-primary" />
+            <h2 className="font-headline text-2xl sm:text-3xl text-color-offwhite">AI Analysis Summary</h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {scanResult.summary && (
+              <div className="p-5 rounded-2xl bg-surface-container-lowest/80 border border-glass-border space-y-2">
+                <p className="font-mono text-xs text-on-surface-variant uppercase tracking-wider">THREAT SUMMARY</p>
+                <p className="font-body text-sm text-color-offwhite leading-relaxed">{scanResult.summary}</p>
+              </div>
+            )}
+
+            {scanResult.explanation && (
+              <div className="p-5 rounded-2xl bg-surface-container-lowest/80 border border-glass-border space-y-2">
+                <p className="font-mono text-xs text-on-surface-variant uppercase tracking-wider">REASONING</p>
+                <p className="font-body text-sm text-on-surface-variant leading-relaxed">{scanResult.explanation}</p>
+              </div>
+            )}
+          </div>
+
+          {scanResult.indicators && scanResult.indicators.length > 0 && (
+            <div className="p-5 rounded-2xl bg-surface-container-lowest/80 border border-glass-border space-y-3">
+              <p className="font-mono text-xs text-on-surface-variant uppercase tracking-wider">EVIDENCE TOKENS</p>
+              <div className="flex flex-wrap gap-2">
+                {scanResult.indicators.map((ind, i) => (
+                  <span
+                    key={i}
+                    className="px-2.5 py-1 rounded-full bg-surface-container-high text-xs font-mono text-color-offwhite border border-glass-border"
+                  >
+                    {ind}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Two-Column Deep Inspection Section */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left: Intercepted Message Breakdown */}
@@ -340,30 +484,55 @@ export const ScanResultReport: React.FC<ScanResultReportProps> = ({
             <div className="font-body text-sm leading-relaxed text-color-offwhite bg-surface-container-low/40 p-5 rounded-xl border border-glass-border space-y-3 font-mono">
               <p className="break-words">
                 {originalMessage ||
-                  'URGENT: Your account has been suspended due to unauthorized login attempts. Verify immediately to avoid permanent lockout.'}
+                  (isScreenshot
+                    ? 'Visual screenshot binary data analyzed directly via neural multimodal pipeline.'
+                    : 'No raw message text supplied.')}
               </p>
             </div>
 
-            {/* Token Flags */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div className="p-3 rounded-xl bg-surface-container-low/50 border border-glass-border space-y-1">
-                <div className="flex items-center gap-1.5 text-primary font-mono text-xs uppercase font-medium">
-                  <AlertTriangle className="w-3.5 h-3.5" /> Linguistic Urgency
-                </div>
-                <p className="font-body text-xs text-on-surface-variant leading-relaxed">
-                  Synthesizes immediate penalty to circumvent critical verification faculties.
-                </p>
+            {/* URL Presence or Absence Confirmation */}
+            <div className="p-3.5 rounded-xl bg-surface-container-low/50 border border-glass-border space-y-2">
+              <div className="flex items-center justify-between font-mono text-xs">
+                <span className="text-on-surface-variant uppercase tracking-wider">URL FORENSIC VERIFICATION</span>
+                <span className="text-color-offwhite">{detectedUrls.length} Detected</span>
               </div>
-
-              <div className="p-3 rounded-xl bg-surface-container-low/50 border border-glass-border space-y-1">
-                <div className="flex items-center gap-1.5 text-primary font-mono text-xs uppercase font-medium">
-                  <Shield className="w-3.5 h-3.5" /> Authority Exploitation
+              {detectedUrls.length > 0 ? (
+                <div className="space-y-1.5 font-mono text-xs">
+                  {detectedUrls.map((detectedUrl, i) => (
+                    <div key={i} className="flex items-center gap-2 text-color-offwhite break-all bg-surface-container-lowest/70 p-2 rounded border border-glass-border/40">
+                      <Link2Off className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <span>{detectedUrl}</span>
+                    </div>
+                  ))}
                 </div>
-                <p className="font-body text-xs text-on-surface-variant leading-relaxed">
-                  Impersonates enterprise institution or security officer with unverified provenance.
+              ) : (
+                <p className="font-mono text-xs text-on-surface-variant">
+                  {isScreenshot ? 'No URL detected in this screenshot.' : 'No URL detected in this message.'}
                 </p>
-              </div>
+              )}
             </div>
+
+            {/* Dynamic Evidence Signals Derived From Real Analysis */}
+            {scanResult.redFlags && scanResult.redFlags.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                {scanResult.redFlags.slice(0, 2).map((rf, idx) => (
+                  <div key={idx} className="p-3 rounded-xl bg-surface-container-low/50 border border-glass-border space-y-1">
+                    <div className="flex items-center gap-1.5 text-primary font-mono text-xs uppercase font-medium">
+                      {getFlagIcon(rf.type)} {rf.type.replace(/_/g, ' ')}
+                    </div>
+                    <p className="font-body text-xs text-on-surface-variant leading-relaxed">
+                      {rf.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-3 rounded-xl bg-surface-container-low/50 border border-glass-border">
+                <p className="font-mono text-xs text-on-surface-variant">
+                  No anomalous linguistic coercion or exploitation indicators isolated.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

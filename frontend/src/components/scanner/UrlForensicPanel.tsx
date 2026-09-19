@@ -46,7 +46,7 @@ export const UrlForensicPanel: React.FC<UrlForensicPanelProps> = ({
     const group = await familyRepository.getFamilyGroup(user.id);
     if (group) {
       const riskLevel = result.verdict === 'SAFE' ? 'LOW' : result.verdict === 'SUSPICIOUS' ? 'MEDIUM' : 'HIGH';
-      const riskScore = result.riskScore ?? (riskLevel === 'HIGH' ? 88 : riskLevel === 'MEDIUM' ? 62 : 12);
+      const riskScore = result.riskScore ?? 0;
 
       await familyRepository.shareThreat({
         familyGroupId: group.id,
@@ -55,7 +55,7 @@ export const UrlForensicPanel: React.FC<UrlForensicPanelProps> = ({
         riskLevel,
         riskScore,
         category: 'PHISHING',
-        summary: result.reasons?.[0] || 'Deceptive link forensic analysis flagged suspicious redirection.',
+        summary: result.reasons?.[0] || 'Deceptive link forensic analysis flagged suspicious characteristics.',
         vector: 'URL Inspection',
         targetDomain: url,
       });
@@ -160,7 +160,7 @@ export const UrlForensicPanel: React.FC<UrlForensicPanelProps> = ({
                       : 'bg-risk-low/20 border-risk-low text-emerald-700 dark:text-[#86efac]'
                   }`}
                 >
-                  {isSuspicious ? 'CRITICAL RISK DETECTED' : 'CLEAN PROTOCOL'}
+                  {isSuspicious ? 'SUSPICIOUS CHARACTERISTICS DETECTED' : 'NO SUSPICIOUS INDICATORS DETECTED'}
                 </span>
                 <span className="font-mono text-xs text-on-surface-variant">
                   INCIDENT #{result.scanId}
@@ -168,9 +168,9 @@ export const UrlForensicPanel: React.FC<UrlForensicPanelProps> = ({
               </div>
               <h2 className="font-headline text-2xl sm:text-3xl text-color-offwhite mt-1">
                 {isSuspicious
-                  ? 'High Risk Deceptive Domain'
+                  ? 'Suspicious URL characteristics detected'
                   : isSafe
-                  ? 'Domain Appears Reputable'
+                  ? 'No suspicious structural indicators detected'
                   : 'Inconclusive URL Pattern'}
               </h2>
             </div>
@@ -186,7 +186,7 @@ export const UrlForensicPanel: React.FC<UrlForensicPanelProps> = ({
                 isSuspicious ? 'text-primary' : 'text-risk-low'
               }`}
             >
-              {result.riskScore != null ? `${result.riskScore}/100` : isSuspicious ? '84/100' : '15/100'}
+              {result.riskScore != null ? `${result.riskScore}/100` : 'Not available'}
             </span>
           </div>
         </div>
@@ -212,6 +212,14 @@ export const UrlForensicPanel: React.FC<UrlForensicPanelProps> = ({
             {copied ? <Check className="w-3.5 h-3.5 text-risk-low" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? 'Copied' : 'Copy'}</span>
           </button>
+        </div>
+
+        {/* Network Isolation Disclosure */}
+        <div className="mt-3 px-1 flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-risk-low shrink-0" />
+          <p className="font-mono text-xs text-on-surface-variant font-medium">
+            ScamShield analyzes this URL's structure without opening the destination.
+          </p>
         </div>
 
         {/* Forensic Static Telemetry Grid */}
@@ -395,7 +403,7 @@ export const UrlForensicPanel: React.FC<UrlForensicPanelProps> = ({
           sharedBy: user?.displayName || user?.email?.split('@')[0] || 'You',
           scanType: 'LINK',
           riskLevel: result.verdict === 'SAFE' ? 'LOW' : result.verdict === 'SUSPICIOUS' ? 'MEDIUM' : 'HIGH',
-          riskScore: result.riskScore ?? (result.verdict === 'HIGH_RISK' ? 88 : result.verdict === 'SUSPICIOUS' ? 65 : 15),
+          riskScore: result.riskScore ?? 0,
           category: 'SUSPICIOUS_LINK',
           summary: result.reasons?.[0] || 'Lexical forensic analysis flagged deceptive structural characteristics.',
           targetDomain: url,

@@ -77,13 +77,13 @@ export const InviteMemberModal: React.FC<InviteMemberModalProps> = ({
         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high w-fit mb-3 border border-glass-border">
           <span className="w-1.5 h-1.5 rounded-full bg-risk-low animate-pulse" />
           <span className="font-mono text-[10px] uppercase tracking-wider text-color-offwhite">
-            LOCAL MOCK INVITATION
+            FAMILY PROTECTION
           </span>
         </div>
 
         <h3 className="font-headline text-2xl text-color-offwhite">Invite Family Member</h3>
         <p className="font-body text-xs text-on-surface-variant mt-1 leading-relaxed">
-          Add a trusted relative to your shared defense perimeter. In this local mock phase, invitations are saved directly to your browser database.
+          Add a trusted relative to your shared defense perimeter. They will be able to share suspicious messages and threats with your family group.
         </p>
 
         {error && (

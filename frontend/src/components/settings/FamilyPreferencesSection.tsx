@@ -16,24 +16,21 @@ export const FamilyPreferencesSection: React.FC<FamilyPreferencesSectionProps> =
   onUpdatePreferences,
 }) => {
   const { user } = useAuth();
-  const [memberCount, setMemberCount] = useState(4);
-  const [memberNames, setMemberNames] = useState('Mom, Dad, Lucas');
+  const [memberCount, setMemberCount] = useState(0);
+  const [members, setMembers] = useState<FamilyMember[]>([]);
 
   useEffect(() => {
     let isMounted = true;
     const loadGroup = async () => {
+      if (!user?.id) return;
       try {
-        const userId = user?.id || 'usr_demo_sentinel';
-        const group = await familyRepository.getFamilyGroup(userId);
-        if (isMounted && group && group.members.length > 0) {
+        const group = await familyRepository.getFamilyGroup(user.id);
+        if (isMounted && group) {
           setMemberCount(group.members.length);
-          const others = group.members.filter((m: FamilyMember) => m.role !== 'OWNER');
-          if (others.length > 0) {
-            setMemberNames(others.map((m: FamilyMember) => m.displayName || m.relationship || 'Ward').join(', '));
-          }
+          setMembers(group.members);
         }
       } catch {
-        // fallback safe values
+        // Safe empty fallback
       }
     };
     loadGroup();
@@ -53,6 +50,11 @@ export const FamilyPreferencesSection: React.FC<FamilyPreferencesSectionProps> =
       aggressivePhishingShield: !preferences.aggressivePhishingShield,
     });
   };
+
+  const nonOwnerMembers = members.filter((m) => m.role !== 'OWNER');
+  const memberNamesSummary = nonOwnerMembers.length > 0
+    ? nonOwnerMembers.map((m) => m.displayName || m.relationship || 'Member').join(', ')
+    : members.length > 0 ? 'Account Owner' : 'No Members';
 
   return (
     <section
@@ -80,23 +82,17 @@ export const FamilyPreferencesSection: React.FC<FamilyPreferencesSectionProps> =
         {/* Member Overview Strip */}
         <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-surface-container/60 shadow-[inset_0_1px_0_0_rgba(245,242,237,0.06)] border border-glass-border/30">
           <div className="flex items-center gap-4">
-            <div className="flex -space-x-3">
-              <div className="w-10 h-10 rounded-full bg-primary/20 border-2 border-surface-dark flex items-center justify-center text-xs font-mono font-bold text-color-offwhite shadow-sm">
-                M
-              </div>
-              <div className="w-10 h-10 rounded-full bg-purple-500/20 border-2 border-surface-dark flex items-center justify-center text-xs font-mono font-bold text-purple-300 shadow-sm">
-                D
-              </div>
-              <div className="w-10 h-10 rounded-full bg-sky-500/20 border-2 border-surface-dark flex items-center justify-center text-xs font-mono font-bold text-sky-300 shadow-sm">
-                L
-              </div>
+            <div className="w-10 h-10 rounded-full bg-surface-container-high border border-glass-border flex items-center justify-center text-on-surface-variant font-mono text-xs font-bold">
+              {memberCount > 0 ? memberCount : <Users className="w-4 h-4" />}
             </div>
             <div>
               <span className="font-title text-base font-semibold text-color-offwhite block">
-                Protected Ward: {memberNames}
+                {memberCount > 0 ? `Protected Members: ${memberNamesSummary}` : 'No Family Circle Formed'}
               </span>
               <span className="font-body text-xs text-on-surface-variant">
-                Real-time heuristics enabled on 6 mobile nodes
+                {memberCount > 0
+                  ? `Real-time heuristics active across ${memberCount} protected account(s)`
+                  : 'Invite loved ones to automatically share high-risk scam warnings.'}
               </span>
             </div>
           </div>
@@ -112,7 +108,7 @@ export const FamilyPreferencesSection: React.FC<FamilyPreferencesSectionProps> =
               to="/family-protection"
               className="px-4 py-1.5 rounded-full bg-surface-bright hover:bg-surface-container-highest text-color-offwhite font-body text-sm transition-all shadow-[inset_0_1px_0_0_rgba(245,242,237,0.12)]"
             >
-              Manage Permissions
+              {memberCount > 0 ? 'Manage Permissions' : 'Set Up Family Shield'}
             </Link>
           </div>
         </div>

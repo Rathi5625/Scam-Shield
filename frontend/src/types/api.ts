@@ -46,9 +46,17 @@ export interface ScanResponse {
   createdAt: string;
 
   // Frontend telemetry additions
-  confidence?: number;
+  confidence?: number;        // null when no real analysis was performed (FIX 2)
   latencySeconds?: number;
   engineName?: string;
+
+  // FIX 6: AI-generated explanation fields from Gemini response
+  summary?: string;           // One-sentence threat summary from Gemini
+  explanation?: string;       // Detailed explanation of threat reasoning
+  indicators?: string[];      // Key phrases / evidence tokens Gemini identified
+
+  // Deterministic URL forensic findings from UrlForensicAnalyzer
+  urlForensics?: UrlScanResponse;
 }
 
 export interface TextScanRequest {
@@ -71,6 +79,7 @@ export interface UrlScanResponse {
   reasons: string[];
   createdAt: string;
   riskScore?: number;
+  url?: string;
 }
 
 export interface ApiError {

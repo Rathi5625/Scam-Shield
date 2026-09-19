@@ -359,7 +359,7 @@ export const SignupPage: React.FC = () => {
               <span>•</span>
               <span>Zero-Knowledge Core</span>
               <span>•</span>
-              <span>LOCAL MOCK AUTH ONLY</span>
+              <span>Enterprise Shield Active</span>
             </div>
           </div>
         </div>

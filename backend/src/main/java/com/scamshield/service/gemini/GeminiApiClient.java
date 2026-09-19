@@ -16,4 +16,17 @@ public interface GeminiApiClient {
             String imageBase64,
             String mimeType
     );
+
+    /**
+     * Calls Google Gemini generateContent with a specified structured JSON schema.
+     * Used to decouple lightweight extraction passes (e.g. OCR URL extraction)
+     * from full threat-assessment schemas.
+     */
+    String generateStructuredContent(
+            String systemInstruction,
+            String userPrompt,
+            String imageBase64,
+            String mimeType,
+            java.util.Map<String, Object> responseSchema
+    );
 }

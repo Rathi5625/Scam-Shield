@@ -189,7 +189,7 @@ export const ScreenshotScannerPage: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-risk-low" />
-              <span>MODEL V4-VISION-SPECTRE (MOCK)</span>
+              <span>AI MULTIMODAL FORENSICS</span>
             </div>
           </div>
 

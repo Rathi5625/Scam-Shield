@@ -1,0 +1,99 @@
+{
+  "serviceArn": "arn:aws:ecs:ap-south-1:761558630384:service/default/ScamShield-Backend-Production",
+  "executionRoleArn": "arn:aws:iam::761558630384:role/ScamShield-ECS-TaskExecution-Role",
+  "taskRoleArn": "arn:aws:iam::761558630384:role/ScamShield-ECS-Task-Role",
+  "healthCheckPath": "/health",
+  "cpu": "1024",
+  "memory": "2048",
+  "cpuArchitecture": "X86_64",
+  "scalingTarget": {
+    "minTaskCount": 1,
+    "maxTaskCount": 2,
+    "autoScalingMetric": "AVERAGE_CPU",
+    "autoScalingTargetValue": 60
+  },
+  "primaryContainer": {
+    "image": "761558630384.dkr.ecr.ap-south-1.amazonaws.com/scamshield-backend:phase-15-8-2-7e661d5",
+    "containerPort": 8080,
+    "awsLogsConfiguration": {
+      "logGroup": "/ecs/scamshield-backend-production",
+      "logStreamPrefix": "ecs"
+    },
+    "environment": [
+      {
+        "name": "PORT",
+        "value": "8080"
+      },
+      {
+        "name": "AWS_REGION",
+        "value": "ap-south-1"
+      },
+      {
+        "name": "AI_PROVIDER",
+        "value": "GEMINI"
+      },
+      {
+        "name": "SCAN_MODE",
+        "value": "GEMINI"
+      },
+      {
+        "name": "GEMINI_MODEL",
+        "value": "gemini-3.6-flash"
+      },
+      {
+        "name": "COGNITO_USER_POOL_ID",
+        "value": "ap-south-1_fF51KRiOB"
+      },
+      {
+        "name": "COGNITO_CLIENT_ID",
+        "value": "5nobimgnf05t17r5lmnupp11la"
+      },
+      {
+        "name": "COGNITO_REGION",
+        "value": "ap-south-1"
+      },
+      {
+        "name": "S3_BUCKET_NAME",
+        "value": "scamshield-private-761558630384"
+      },
+      {
+        "name": "SNS_TOPIC_ARN",
+        "value": "arn:aws:sns:ap-south-1:761558630384:scamshield-notifications-dev"
+      },
+      {
+        "name": "STORAGE_MODE",
+        "value": "S3"
+      },
+      {
+        "name": "NOTIFICATION_MODE",
+        "value": "SNS"
+      },
+      {
+        "name": "DYNAMODB_TABLE_USERS",
+        "value": "ScamShield-Users-dev"
+      },
+      {
+        "name": "DYNAMODB_TABLE_SCANS",
+        "value": "ScamShield-ScanHistory-dev"
+      },
+      {
+        "name": "DYNAMODB_TABLE_GROUPS",
+        "value": "ScamShield-FamilyGroups-dev"
+      },
+      {
+        "name": "DYNAMODB_TABLE_INVITES",
+        "value": "ScamShield-FamilyInvites-dev"
+      },
+      {
+        "name": "CORS_ALLOWED_ORIGIN",
+        "value": "https://scam-shield-kohl-phi.vercel.app"
+      }
+    ],
+    "secrets": [
+      {
+        "name": "GEMINI_API_KEY",
+        "valueFrom": "arn:aws:secretsmanager:ap-south-1:761558630384:secret:scamshield/gemini-api-key-XFCzOm"
+      }
+    ]
+  }
+}

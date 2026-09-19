@@ -1,0 +1,49 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ScamShieldDynamoDbDataAccess",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Query"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:ap-south-1:761558630384:table/ScamShield-Users-dev",
+        "arn:aws:dynamodb:ap-south-1:761558630384:table/ScamShield-ScanHistory-dev",
+        "arn:aws:dynamodb:ap-south-1:761558630384:table/ScamShield-ScanHistory-dev/index/groupId-createdAt-index",
+        "arn:aws:dynamodb:ap-south-1:761558630384:table/ScamShield-FamilyGroups-dev",
+        "arn:aws:dynamodb:ap-south-1:761558630384:table/ScamShield-FamilyInvites-dev"
+      ]
+    },
+    {
+      "Sid": "ScamShieldS3ObjectStorageAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::scamshield-private-761558630384/private/*"
+    },
+    {
+      "Sid": "ScamShieldS3BucketMetadataAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::scamshield-private-761558630384"
+    },
+    {
+      "Sid": "ScamShieldSnsThreatAlertPublish",
+      "Effect": "Allow",
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": "arn:aws:sns:ap-south-1:761558630384:scamshield-notifications-dev"
+    }
+  ]
+}

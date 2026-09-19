@@ -392,7 +392,10 @@ export class LocalFamilyProtectionRepository implements FamilyProtectionReposito
     });
 
     const total = threats.length;
-    const deflectionRate = total > 0 ? Math.round(((high + med) / total) * 100) : 94;
+    const deflectionRate = total > 0 ? Math.round(((high + med) / total) * 100) : 0;
+    const linkChecks = threats.filter(
+      (t) => t.scanType === 'LINK' || (t.vector && t.vector.toLowerCase().includes('link'))
+    ).length;
 
     return {
       totalSharedThreats: total,
@@ -402,8 +405,8 @@ export class LocalFamilyProtectionRepository implements FamilyProtectionReposito
       activeMembers,
       pendingInvites,
       deflectionRate,
-      estimatedSavings: high * 850 + med * 120 + 3420,
-      linkChecksCount: total * 18 + 142,
+      estimatedSavings: 0,
+      linkChecksCount: linkChecks,
     };
   }
 }

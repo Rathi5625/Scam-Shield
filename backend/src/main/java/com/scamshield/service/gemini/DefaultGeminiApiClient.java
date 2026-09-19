@@ -48,12 +48,75 @@ public class DefaultGeminiApiClient implements GeminiApiClient {
                 .build();
     }
 
+    public static final Map<String, Object> OCR_SCHEMA = Map.of(
+            "type", "OBJECT",
+            "properties", Map.of(
+                    "urlsFound", Map.of(
+                            "type", "ARRAY",
+                            "items", Map.of("type", "STRING")
+                    )
+            ),
+            "required", List.of("urlsFound")
+    );
+
+    public static final Map<String, Object> DEFAULT_THREAT_SCHEMA = Map.of(
+            "type", "OBJECT",
+            "properties", Map.ofEntries(
+                    Map.entry("riskLevel", Map.of("type", "STRING", "enum", List.of("HIGH", "MEDIUM", "LOW", "UNKNOWN"))),
+                    Map.entry("riskScore", Map.of("type", "INTEGER")),
+                    Map.entry("threatCategory", Map.of("type", "STRING")),
+                    Map.entry("confidence", Map.of(
+                            "type", "NUMBER",
+                            "description", "Confidence score between 0.0 and 100.0 (e.g. 95.0, NOT a 0-1 probability)"
+                    )),
+                    Map.entry("summary", Map.of("type", "STRING")),
+                    Map.entry("explanation", Map.of("type", "STRING")),
+                    Map.entry("redFlags", Map.of(
+                            "type", "ARRAY",
+                            "items", Map.of(
+                                    "type", "OBJECT",
+                                    "properties", Map.of(
+                                            "type", Map.of(
+                                                    "type", "STRING",
+                                                    "enum", List.of(
+                                                            "URGENCY",
+                                                            "FINANCIAL_REQUEST",
+                                                            "IMPERSONATION",
+                                                            "SUSPICIOUS_LINK",
+                                                            "SENSITIVE_INFO_REQUEST",
+                                                            "GRAMMAR_INCONSISTENCY",
+                                                            "UNSOLICITED_CONTACT",
+                                                            "TOO_GOOD_TO_BE_TRUE"
+                                                    )
+                                            ),
+                                            "label", Map.of("type", "STRING"),
+                                            "score", Map.of("type", "INTEGER")
+                                    ),
+                                    "required", List.of("type", "label", "score")
+                            )
+                    )),
+                    Map.entry("recommendedAction", Map.of("type", "STRING")),
+                    Map.entry("indicators", Map.of("type", "ARRAY", "items", Map.of("type", "STRING")))
+            ),
+            "required", List.of("riskLevel", "riskScore", "threatCategory", "confidence", "summary", "redFlags", "recommendedAction")
+    );
+
     @Override
     public String generateStructuredContent(
             String systemInstruction,
             String userPrompt,
             String imageBase64,
             String mimeType) {
+        return generateStructuredContent(systemInstruction, userPrompt, imageBase64, mimeType, null);
+    }
+
+    @Override
+    public String generateStructuredContent(
+            String systemInstruction,
+            String userPrompt,
+            String imageBase64,
+            String mimeType,
+            Map<String, Object> responseSchema) {
 
         if (!properties.isConfigured()) {
             log.warn("DefaultGeminiApiClient: GEMINI_API_KEY is not configured. Request cannot be dispatched.");
@@ -61,7 +124,7 @@ public class DefaultGeminiApiClient implements GeminiApiClient {
         }
 
         try {
-            Map<String, Object> payload = buildRequestPayload(systemInstruction, userPrompt, imageBase64, mimeType);
+            Map<String, Object> payload = buildRequestPayload(systemInstruction, userPrompt, imageBase64, mimeType, responseSchema);
             String uri = "/v1beta/models/" + properties.getModel() + ":generateContent";
 
             log.debug("DefaultGeminiApiClient: Dispatching generateContent to model: {}", properties.getModel());
@@ -101,38 +164,22 @@ public class DefaultGeminiApiClient implements GeminiApiClient {
             String userPrompt,
             String imageBase64,
             String mimeType) {
+        return buildRequestPayload(systemInstruction, userPrompt, imageBase64, mimeType, null);
+    }
 
-        Map<String, Object> responseSchema = Map.of(
-                "type", "OBJECT",
-                "properties", Map.ofEntries(
-                        Map.entry("riskLevel", Map.of("type", "STRING", "enum", List.of("HIGH", "MEDIUM", "LOW", "UNKNOWN"))),
-                        Map.entry("riskScore", Map.of("type", "INTEGER")),
-                        Map.entry("threatCategory", Map.of("type", "STRING")),
-                        Map.entry("confidence", Map.of("type", "NUMBER")),
-                        Map.entry("summary", Map.of("type", "STRING")),
-                        Map.entry("explanation", Map.of("type", "STRING")),
-                        Map.entry("redFlags", Map.of(
-                                "type", "ARRAY",
-                                "items", Map.of(
-                                        "type", "OBJECT",
-                                        "properties", Map.of(
-                                                "type", Map.of("type", "STRING"),
-                                                "label", Map.of("type", "STRING"),
-                                                "score", Map.of("type", "INTEGER")
-                                        ),
-                                        "required", List.of("type", "label", "score")
-                                )
-                        )),
-                        Map.entry("recommendedAction", Map.of("type", "STRING")),
-                        Map.entry("indicators", Map.of("type", "ARRAY", "items", Map.of("type", "STRING")))
-                ),
-                "required", List.of("riskLevel", "riskScore", "threatCategory", "confidence", "summary", "redFlags", "recommendedAction")
-        );
+    Map<String, Object> buildRequestPayload(
+            String systemInstruction,
+            String userPrompt,
+            String imageBase64,
+            String mimeType,
+            Map<String, Object> customResponseSchema) {
+
+        Map<String, Object> effectiveSchema = customResponseSchema != null ? customResponseSchema : DEFAULT_THREAT_SCHEMA;
 
         Map<String, Object> generationConfig = Map.of(
                 "temperature", 0.0,
                 "responseMimeType", "application/json",
-                "responseSchema", responseSchema
+                "responseSchema", effectiveSchema
         );
 
         Map<String, Object> systemInstructionMap = Map.of(

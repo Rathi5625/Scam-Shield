@@ -282,16 +282,14 @@ public class BedrockScanService implements ScanService {
                 }
             }
 
-            if (redFlags.isEmpty()) {
-                if (riskLevel == RiskLevel.HIGH || riskLevel == RiskLevel.MEDIUM) {
-                    redFlags.add(new RedFlag(RedFlagType.UNSOLICITED_CONTACT, "Anomalous communication pattern detected", riskScore));
-                } else {
-                    redFlags.add(new RedFlag(RedFlagType.UNSOLICITED_CONTACT, "Conversational baseline telemetry", Math.max(10, riskScore)));
-                }
-            }
+            // FIX 4 (Bedrock): Empty redFlags left as-is — no synthetic fabrication.
 
-            // 6. Confidence (0-100)
-            double confidence = root.hasNonNull("confidence") ? root.get("confidence").asDouble(90.0) : 92.5;
+            // FIX 3 (Bedrock): Missing confidence field returns null — triggers retry/fallback.
+            if (!root.hasNonNull("confidence")) {
+                log.warn("BedrockScanService: Response missing 'confidence' field for scanId={}. Discarding.", scanId);
+                return null;
+            }
+            Double confidence = root.get("confidence").asDouble();
             confidence = Math.max(0.0, Math.min(100.0, confidence));
 
             // 7. Latency
@@ -395,7 +393,7 @@ public class BedrockScanService implements ScanService {
                 redFlags,
                 action,
                 timestamp,
-                88.0,
+                null,   // FIX 2 (Bedrock): null confidence — no real analysis was performed
                 Math.round(latencySec * 100.0) / 100.0,
                 engine
         );
@@ -431,45 +429,10 @@ public class BedrockScanService implements ScanService {
 
     @Override
     public UrlScanResponse scanUrl(UrlScanRequest request) {
-        // Preserves the strict lexical/heuristic Link Shield architecture (no outbound web requests)
+        // FIX 7: Delegate to UrlForensicAnalyzer — canonical lexical engine shared by all scan modes.
+        // This eliminates the duplicate heuristic implementation and the hardcoded 12/84 risk scores
+        // that the legacy 4-arg UrlScanResponse constructor introduced.
         String url = request != null && request.url() != null ? request.url() : "";
-        String scanId = "URL-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
-        String timestamp = Instant.now().toString();
-
-        List<String> reasons = new ArrayList<>();
-        String lower = url.toLowerCase(Locale.ROOT).trim();
-
-        if (!lower.startsWith("https://")) {
-            reasons.add("Insecure transmission: No HTTPS encryption detected");
-        }
-        for (String shortener : KNOWN_SHORTENERS) {
-            if (lower.contains(shortener)) {
-                reasons.add("Shortened URL: Destination hidden behind known masking service (" + shortener + ")");
-                break;
-            }
-        }
-        if (IP_PATTERN.matcher(lower).find()) {
-            reasons.add("Suspicious destination: Raw IP address used instead of registered domain");
-        }
-        for (String brandKeyword : SUSPICIOUS_BRAND_KEYWORDS) {
-            if (lower.contains(brandKeyword)) {
-                reasons.add("Deceptive lookalike domain targeting Indian financial services (" + brandKeyword + ")");
-                break;
-            }
-        }
-        if (lower.contains(".tk") || lower.contains(".xyz") || lower.contains(".top") || lower.contains(".buzz") || lower.contains(".work")) {
-            reasons.add("High-risk top-level domain frequently associated with disposable phishing campaigns");
-        }
-
-        String verdict;
-        if (reasons.isEmpty()) {
-            verdict = "SAFE";
-            reasons.add("Valid HTTPS protocol");
-            reasons.add("Registered domain with reputable namespace");
-        } else {
-            verdict = "SUSPICIOUS";
-        }
-
-        return new UrlScanResponse(scanId, verdict, reasons, timestamp);
+        return UrlForensicAnalyzer.analyze(url);
     }
 }

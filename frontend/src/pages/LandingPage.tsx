@@ -81,11 +81,11 @@ export const LandingPage: React.FC = () => {
                         <MessageSquare className="w-4 h-4" />
                       </div>
                       <div>
-                        <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">Intercepted SMS</div>
-                        <div className="font-mono text-xs text-color-offwhite font-semibold">+1 (800) 492-9104</div>
+                        <div className="font-mono text-[10px] text-primary uppercase tracking-wider font-semibold">ILLUSTRATIVE EXAMPLE • SMS</div>
+                        <div className="font-mono text-xs text-color-offwhite font-semibold">Deception Anatomy Showcase</div>
                       </div>
                     </div>
-                    <span className="font-mono text-[10px] text-muted-foreground">13:42:09 UTC</span>
+                    <span className="font-mono text-[10px] text-muted-foreground">Demo Breakdown</span>
                   </div>
 
                   <div className="rounded-xl bg-surface-container-lowest/80 p-4 border border-glass-border shadow-inner mb-4">
@@ -103,7 +103,7 @@ export const LandingPage: React.FC = () => {
                     <span className="w-1.5 h-1.5 rounded-full bg-color-crimson" />
                     Origin: Spoofed VoIP Gateway
                   </span>
-                  <span className="text-muted-foreground/80">SHA-256 Verified</span>
+                  <span className="text-muted-foreground/80">Specimen Signature</span>
                 </div>
               </div>
 
@@ -116,7 +116,7 @@ export const LandingPage: React.FC = () => {
                         <AlertTriangle className="w-3.5 h-3.5" />
                         HIGH RISK
                       </span>
-                      <span className="font-mono text-xs text-muted-foreground">Threat Confirmed</span>
+                      <span className="font-mono text-xs text-muted-foreground">Example Detection Model</span>
                     </div>
 
                     <div className="flex items-baseline gap-1 bg-surface-container-high/60 px-3 py-1 rounded-full border border-glass-border shadow-inner">

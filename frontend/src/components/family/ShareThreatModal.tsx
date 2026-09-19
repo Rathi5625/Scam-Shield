@@ -94,7 +94,7 @@ export const ShareThreatModal: React.FC<ShareThreatModalProps> = ({
                   : 'bg-risk-medium/20 text-risk-medium border border-risk-medium/50'
               }`}
             >
-              {threat.riskLevel} RISK • {threat.riskScore ?? 80}/100
+              {threat.riskLevel} RISK • {threat.riskScore != null ? `${threat.riskScore}/100` : 'Score unavailable'}
             </span>
           </div>
 

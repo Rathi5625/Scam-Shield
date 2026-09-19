@@ -72,25 +72,25 @@ export const GovernanceSection: React.FC = () => {
       title: 'Security Architecture & Cloud Controls',
       category: 'CRYPTOGRAPHIC DEFENSE',
       icon: <Lock className="w-5 h-5 text-primary" />,
-      summary: 'TLS 1.3 in-transit encryption, AWS Secrets Manager key segregation, and isolated ECS containers.',
+      summary: 'In-transit encryption, hardware-isolated credential boundaries, and network-isolated link inspection.',
       content: (
         <div className="space-y-4 text-xs font-body leading-relaxed text-on-surface-variant">
           <div>
             <h5 className="font-headline text-sm text-color-offwhite mb-1">1. Cryptographic Transport Security</h5>
             <p>
-              All traffic between client devices, the Vercel edge frontend, and the Amazon ECS backend is strictly
-              enforced over TLS 1.3 with forward secrecy cipher suites (AES-256-GCM / ChaCha20-Poly1305). Plaintext HTTP
+              All traffic between client browsers and backend processing microservices is strictly
+              enforced over modern TLS with forward secrecy cipher suites. Plaintext HTTP
               connections are automatically dropped at the ingress perimeter.
             </p>
           </div>
 
           <div>
-            <h5 className="font-headline text-sm text-color-offwhite mb-1">2. IAM & Secrets Segregation</h5>
+            <h5 className="font-headline text-sm text-color-offwhite mb-1">2. Role & Secret Segregation</h5>
             <p>
-              Underlying backend microservices run under least-privilege AWS IAM execution roles within the ap-south-1
-              region. High-entropy API keys (such as Google Gemini API credentials) are fetched strictly via AWS Secrets
-              Manager at container initialization; zero plaintext API keys are baked into Docker images, source code, or
-              client-side bundles.
+              Underlying backend microservices execute under least-privilege service roles with hardware-isolated
+              credential boundaries. Sensitive service credentials and master configurations are fetched strictly
+              at container initialization; zero plaintext credentials are baked into Docker images, source code, or
+              client-side web bundles.
             </p>
           </div>
 
@@ -193,34 +193,34 @@ export const GovernanceSection: React.FC = () => {
     },
     {
       id: 'system',
-      title: 'About ScamShield & Cluster Telemetry',
+      title: 'About ScamShield & System Architecture',
       category: 'OPERATIONAL SPECS',
       icon: <Server className="w-5 h-5 text-secondary" />,
-      summary: 'Production runtime specs, ECS cluster version, ap-south-1 region, and operational health.',
+      summary: 'Production operational specifications, real-time defense posture, and system verification.',
       content: (
         <div className="space-y-4 text-xs font-body leading-relaxed text-on-surface-variant">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
             <div className="p-3 rounded-xl bg-surface-container-lowest/80 border border-glass-border">
-              <span className="text-[10px] text-on-surface-variant/80 uppercase block">HOST ENVIRONMENT</span>
-              <span className="text-color-offwhite font-semibold">Amazon ECS Fargate (ap-south-1)</span>
+              <span className="text-[10px] text-on-surface-variant/80 uppercase block">PROCESSING ENVIRONMENT</span>
+              <span className="text-color-offwhite font-semibold">Secure Cloud Infrastructure</span>
             </div>
             <div className="p-3 rounded-xl bg-surface-container-lowest/80 border border-glass-border">
-              <span className="text-[10px] text-on-surface-variant/80 uppercase block">MULTIMODAL AI CORE</span>
-              <span className="text-color-offwhite font-semibold">Gemini 2.5 Flash Neural Sentry</span>
+              <span className="text-[10px] text-on-surface-variant/80 uppercase block">ANALYSIS ENGINE</span>
+              <span className="text-color-offwhite font-semibold">AI Threat Intelligence</span>
             </div>
             <div className="p-3 rounded-xl bg-surface-container-lowest/80 border border-glass-border">
-              <span className="text-[10px] text-on-surface-variant/80 uppercase block">DEPLOYED BUILD</span>
-              <span className="text-color-offwhite font-semibold">v1.0.4-prod (Revision 7371788)</span>
+              <span className="text-[10px] text-on-surface-variant/80 uppercase block">SERVICE STATUS</span>
+              <span className="text-color-offwhite font-semibold">Operational</span>
             </div>
             <div className="p-3 rounded-xl bg-surface-container-lowest/80 border border-glass-border">
-              <span className="text-[10px] text-on-surface-variant/80 uppercase block">EDGE INGRESS</span>
-              <span className="text-color-offwhite font-semibold">Vercel Global Edge (HTTPS / TLS 1.3)</span>
+              <span className="text-[10px] text-on-surface-variant/80 uppercase block">CONNECTION</span>
+              <span className="text-color-offwhite font-semibold">Secure HTTPS</span>
             </div>
           </div>
 
           <div className="pt-2 text-on-surface-variant text-xs">
             For coordinated vulnerability disclosure, enterprise deployment inquiries, or security auditing, reach out
-            to <span className="font-mono text-color-offwhite">security@scamshield.internal</span>.
+            to <span className="font-mono text-color-offwhite">security@scamshield.org</span>.
           </div>
         </div>
       ),
@@ -242,7 +242,7 @@ export const GovernanceSection: React.FC = () => {
               System Governance & Legal Framework
             </h3>
             <span className="font-mono text-xs text-secondary">
-              Production Release v1.0.4 • ap-south-1 Cluster
+              Production Release • Operational System Status
             </span>
           </div>
         </div>

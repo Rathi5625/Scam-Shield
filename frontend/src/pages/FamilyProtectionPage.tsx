@@ -48,9 +48,9 @@ export const FamilyProtectionPage: React.FC = () => {
     lowRiskThreats: 0,
     activeMembers: 0,
     pendingInvites: 0,
-    deflectionRate: 94,
-    estimatedSavings: 3420,
-    linkChecksCount: 142,
+    deflectionRate: 0,
+    estimatedSavings: 0,
+    linkChecksCount: 0,
   });
 
   // Modals state

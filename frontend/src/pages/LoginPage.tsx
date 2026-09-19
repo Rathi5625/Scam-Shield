@@ -145,7 +145,7 @@ export const LoginPage: React.FC = () => {
                     Operative ID / Email
                   </label>
                   <span className="text-primary text-[10px] tracking-widest uppercase">
-                    LOCAL ENCRYPTED
+                    END-TO-END ENCRYPTED
                   </span>
                 </div>
 

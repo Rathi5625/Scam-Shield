@@ -96,7 +96,7 @@ export function createRecordFromUrlScan(response: UrlScanResponse, rawUrl: strin
   else if (response.verdict === 'SUSPICIOUS') riskLevel = 'MEDIUM';
   else if (response.verdict === 'HIGH_RISK') riskLevel = 'HIGH';
 
-  const riskScore = riskLevel === 'HIGH' ? 88 : riskLevel === 'MEDIUM' ? 62 : 12;
+  const riskScore = response.riskScore ?? 0;
   const reasonSummary = response.reasons?.[0] || 'Static Lexical Inspection';
 
   return {

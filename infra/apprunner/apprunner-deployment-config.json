@@ -1,0 +1,51 @@
+{
+  "ServiceName": "ScamShield-Backend-Production",
+  "SourceConfiguration": {
+    "ImageRepository": {
+      "ImageIdentifier": "761558630384.dkr.ecr.ap-south-1.amazonaws.com/scamshield-backend:phase-15-8-2-7e661d5",
+      "ImageConfiguration": {
+        "Port": "8080",
+        "RuntimeEnvironmentVariables": {
+          "PORT": "8080",
+          "AWS_REGION": "ap-south-1",
+          "AI_PROVIDER": "GEMINI",
+          "SCAN_MODE": "GEMINI",
+          "GEMINI_MODEL": "gemini-3.6-flash",
+          "COGNITO_USER_POOL_ID": "ap-south-1_fF51KRiOB",
+          "COGNITO_CLIENT_ID": "5nobimgnf05t17r5lmnupp11la",
+          "COGNITO_REGION": "ap-south-1",
+          "S3_BUCKET_NAME": "scamshield-private-761558630384",
+          "SNS_TOPIC_ARN": "arn:aws:sns:ap-south-1:761558630384:scamshield-notifications-dev",
+          "STORAGE_MODE": "S3",
+          "NOTIFICATION_MODE": "SNS",
+          "DYNAMODB_TABLE_USERS": "ScamShield-Users-dev",
+          "DYNAMODB_TABLE_SCANS": "ScamShield-ScanHistory-dev",
+          "DYNAMODB_TABLE_GROUPS": "ScamShield-FamilyGroups-dev",
+          "DYNAMODB_TABLE_INVITES": "ScamShield-FamilyInvites-dev",
+          "CORS_ALLOWED_ORIGIN": "https://d84l1y8p4kdic.cloudfront.net"
+        },
+        "RuntimeEnvironmentSecrets": {
+          "GEMINI_API_KEY": "arn:aws:secretsmanager:ap-south-1:761558630384:secret:scamshield/gemini-api-key-XFCzOm"
+        }
+      },
+      "ImageRepositoryType": "ECR"
+    },
+    "AuthenticationConfiguration": {
+      "AccessRoleArn": "arn:aws:iam::761558630384:role/ScamShield-AppRunner-ECR-Access-Role"
+    },
+    "AutoDeploymentsEnabled": false
+  },
+  "InstanceConfiguration": {
+    "Cpu": "1 vCPU",
+    "Memory": "2 GB",
+    "InstanceRoleArn": "arn:aws:iam::761558630384:role/ScamShield-AppRunner-Role"
+  },
+  "HealthCheckConfiguration": {
+    "Protocol": "HTTP",
+    "Path": "/health",
+    "Interval": 10,
+    "Timeout": 5,
+    "HealthyThreshold": 1,
+    "UnhealthyThreshold": 5
+  }
+}

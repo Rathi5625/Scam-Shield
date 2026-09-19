@@ -91,4 +91,55 @@ class DefaultGeminiApiClientTest {
         assertThat(parts.get(0)).doesNotContainKey("inlineData");
         assertThat(parts.get(0)).doesNotContainKey("inline_data");
     }
+
+    @Test
+    @DisplayName("OCR request payload uses minimal OCR_SCHEMA with urlsFound and excludes full threat assessment fields")
+    @SuppressWarnings("unchecked")
+    void buildRequestPayloadWithOcrSchemaDiffersFromFullThreatSchema() {
+        String base64Data = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+
+        // 1. OCR Payload using OCR_SCHEMA
+        Map<String, Object> ocrPayload = client.buildRequestPayload(
+                "OCR System Prompt",
+                "Extract URLs",
+                base64Data,
+                "image/png",
+                DefaultGeminiApiClient.OCR_SCHEMA
+        );
+
+        assertThat(ocrPayload).containsKey("generationConfig");
+        Map<String, Object> ocrGenConfig = (Map<String, Object>) ocrPayload.get("generationConfig");
+        assertThat(ocrGenConfig).containsEntry("responseMimeType", "application/json");
+        assertThat(ocrGenConfig).containsKey("responseSchema");
+
+        Map<String, Object> ocrSchema = (Map<String, Object>) ocrGenConfig.get("responseSchema");
+        assertThat(ocrSchema).containsEntry("type", "OBJECT");
+        assertThat(ocrSchema).containsEntry("required", List.of("urlsFound"));
+
+        Map<String, Object> ocrProperties = (Map<String, Object>) ocrSchema.get("properties");
+        assertThat(ocrProperties).containsKey("urlsFound");
+        // Must NOT contain any full threat assessment schema fields
+        assertThat(ocrProperties).doesNotContainKeys(
+                "riskLevel", "riskScore", "threatCategory", "confidence",
+                "summary", "explanation", "redFlags", "recommendedAction", "indicators"
+        );
+
+        // 2. Default Full Threat Assessment Payload
+        Map<String, Object> defaultPayload = client.buildRequestPayload(
+                "Threat System Prompt",
+                "Analyze threat",
+                base64Data,
+                "image/png"
+        );
+        Map<String, Object> defaultGenConfig = (Map<String, Object>) defaultPayload.get("generationConfig");
+        Map<String, Object> defaultSchema = (Map<String, Object>) defaultGenConfig.get("responseSchema");
+        Map<String, Object> defaultProperties = (Map<String, Object>) defaultSchema.get("properties");
+
+        // Threat schema MUST contain full forensic assessment fields and NOT urlsFound
+        assertThat(defaultProperties).containsKeys(
+                "riskLevel", "riskScore", "threatCategory", "confidence",
+                "summary", "explanation", "redFlags", "recommendedAction", "indicators"
+        );
+        assertThat(defaultProperties).doesNotContainKey("urlsFound");
+    }
 }

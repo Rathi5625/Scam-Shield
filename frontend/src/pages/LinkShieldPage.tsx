@@ -18,28 +18,9 @@ import {
   X,
   Shield,
   AlertCircle,
-  Sparkles,
   ArrowRight,
 } from 'lucide-react';
 import { usePageMeta } from '../hooks/usePageMeta';
-
-const PRESET_URLS = [
-  {
-    label: 'Lookalike Bank Trap',
-    url: 'http://secure-chase-bank-login.com-account.ru/verify',
-    type: 'SUSPICIOUS',
-  },
-  {
-    label: 'Obfuscated Shortener',
-    url: 'https://bit.ly/claim-urgent-reward-now',
-    type: 'SUSPICIOUS',
-  },
-  {
-    label: 'Verified Official Domain',
-    url: 'https://www.chase.com',
-    type: 'SAFE',
-  },
-];
 
 export const LinkShieldPage: React.FC = () => {
   usePageMeta({
@@ -106,10 +87,6 @@ export const LinkShieldPage: React.FC = () => {
     setError(null);
   };
 
-  const handlePresetSelect = (presetUrl: string) => {
-    setUrlInput(presetUrl);
-    handleScanUrl(presetUrl);
-  };
 
   return (
     <PageContainer maxWidth="7xl">
@@ -194,7 +171,7 @@ export const LinkShieldPage: React.FC = () => {
               <div className="py-12">
                 <LoadingState message="Conducting static lexical inspection..." />
                 <p className="font-mono text-xs text-center text-on-surface-variant mt-4">
-                  MOCK ANALYSIS (Local Phase 3) • Static URL Heuristics Only
+                  Zero Network Dispatch • Static Lexical Forensics Only
                 </p>
               </div>
             ) : (
@@ -265,48 +242,6 @@ export const LinkShieldPage: React.FC = () => {
                     </div>
                   )}
                 </form>
-
-                {/* Preset Testing Buttons */}
-                <div className="pt-4 border-t border-glass-border/40">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="font-mono text-xs uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-color-crimson" />
-                      <span>Quick Test Scenarios</span>
-                    </span>
-                    <span className="font-mono text-[11px] text-on-surface-variant/60">
-                      Click to auto-inspect
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                    {PRESET_URLS.map((preset) => (
-                      <button
-                        key={preset.label}
-                        type="button"
-                        onClick={() => handlePresetSelect(preset.url)}
-                        className="text-left p-3 rounded-xl bg-surface-container-high/40 hover:bg-surface-container-high/80 border border-glass-border/60 hover:border-glass-border transition-all group cursor-pointer"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-body text-xs font-medium text-color-offwhite group-hover:text-primary transition-colors">
-                            {preset.label}
-                          </span>
-                          <span
-                            className={`font-mono text-[9px] px-1.5 py-0.5 rounded border uppercase ${
-                              preset.type === 'SUSPICIOUS'
-                                ? 'bg-color-crimson/20 border-color-crimson/40 text-primary'
-                                : 'bg-risk-low/20 border-risk-low/40 text-risk-low'
-                            }`}
-                          >
-                            {preset.type}
-                          </span>
-                        </div>
-                        <p className="font-mono text-[10px] text-on-surface-variant truncate mt-1">
-                          {preset.url}
-                        </p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
 
                 {/* Security Guarantee Notice */}
                 <div className="p-4 rounded-xl bg-surface-container-lowest/60 border border-glass-border/40 flex items-start gap-3">

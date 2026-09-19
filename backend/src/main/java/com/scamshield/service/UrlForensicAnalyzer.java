@@ -57,7 +57,8 @@ public final class UrlForensicAnalyzer {
                     "SUSPICIOUS",
                     List.of("Missing input: No URL provided for lexical analysis"),
                     timestamp,
-                    80
+                    80,
+                    input
             );
         }
 
@@ -93,7 +94,8 @@ public final class UrlForensicAnalyzer {
                     "SUSPICIOUS",
                     List.of("Malformed URL syntax: Failed RFC compliant URI parsing", "Potential malformed evasion sequence"),
                     timestamp,
-                    85
+                    85,
+                    input
             );
         }
 
@@ -223,11 +225,13 @@ public final class UrlForensicAnalyzer {
             verdict = "SAFE";
             if (reasons.isEmpty()) {
                 reasons.add("No obvious deceptive lexical indicators detected");
+                reasons.add("No suspicious structural indicators detected");
                 reasons.add("Valid HTTPS protocol detected");
                 reasons.add("Standard single-tier domain structure with reputable namespace");
+                reasons.add("ScamShield analyzes this URL's structure without opening the destination");
             }
         }
 
-        return new UrlScanResponse(scanId, verdict, reasons, timestamp, score);
+        return new UrlScanResponse(scanId, verdict, reasons, timestamp, score, input);
     }
 }

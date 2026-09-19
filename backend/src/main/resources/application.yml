@@ -62,8 +62,21 @@ aws:
     timeout-seconds: ${BEDROCK_TIMEOUT_SECONDS:30}
     max-attempts: ${BEDROCK_MAX_ATTEMPTS:2}
 
+# FIX 8: DataSeederService is guarded by @ConditionalOnProperty(name="scamshield.seed-demo-data").
+# Default is false. Never set this to true in production ECS task definitions.
 seed:
   demo-data: ${SEED_DEMO_DATA:false}
+
+scamshield:
+  # FIX 8: Structural guard — DataSeederService only registers when explicitly true.
+  seed-demo-data: ${SEED_DEMO_DATA:false}
+
+  # FIX 5 (Option A — documented): Link Shield (scanUrl) is FULLY DETERMINISTIC.
+  # Architecture: User URL -> UrlForensicAnalyzer (lexical, zero-network) -> UrlScanResponse.
+  # No LLM is involved in the URL scan pipeline. This is intentional: the deterministic
+  # analyzer provides reproducible, auditable results with zero hallucination risk.
+  # Any future AI reasoning layer must be added explicitly, not assumed.
+  link-shield-mode: STATIC_LEXICAL_HEURISTICS
 
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGIN:http://localhost:5173}
